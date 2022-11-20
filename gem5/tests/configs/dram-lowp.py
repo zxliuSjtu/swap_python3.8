@@ -65,4 +65,4 @@ def run_test(root):
         sys.argv.append('-r 2')
 
         # Execute the script we are wrapping
-        execfile(srcpath('configs/dram/low_power_sweep.py'), globals())
+        exec(compile(open(srcpath('configs/dram/low_power_sweep.py'), "rb").read(), srcpath('configs/dram/low_power_sweep.py'), 'exec'), globals())

@@ -62,7 +62,7 @@ optionsparser.add_option(
 def warning(msg):
     global options
     if options.verbose:
-        print "WARNING: %s" %(msg)
+        print("WARNING: %s" %(msg))
 
 def toNumber(value):
     try:
@@ -95,14 +95,14 @@ class Component:
         self.hierarchy_level = None
 
     def print_data(self):
-        print "%s:" % self.name
-        print "  Area = %s" % self.area
-        print "  Peak Dynamic Power = %s" % self.peak_dynamic_power
-        print "  Subthreshold Leakage = %s" % self.subthreshold_leakage
-        print "  Gate Leakage = %s" % self.gate_leakage
-        print "  Runtime Dynamic Power = %s" % self.runtime_dynamic_power
-        print "  Runtime Dynamic Energy = %s" % self.runtime_dynamic_energy
-        print "  Total Runtime Energy = %s" % self.total_runtime_energy
+        print("%s:" % self.name)
+        print("  Area = %s" % self.area)
+        print("  Peak Dynamic Power = %s" % self.peak_dynamic_power)
+        print("  Subthreshold Leakage = %s" % self.subthreshold_leakage)
+        print("  Gate Leakage = %s" % self.gate_leakage)
+        print("  Runtime Dynamic Power = %s" % self.runtime_dynamic_power)
+        print("  Runtime Dynamic Energy = %s" % self.runtime_dynamic_energy)
+        print("  Total Runtime Energy = %s" % self.total_runtime_energy)
 
     def set_name_and_level(self, name_string):
         self.name = name_string.lstrip().rstrip(":")
@@ -131,51 +131,51 @@ class Component:
                 child.verify_values()
 
         if not withinTolerance(self.area, temp_node.area):
-            print "WRONG: %s.area = %s != %s" % \
-                    (self.name, self.area, temp_node.area)
+            print("WRONG: %s.area = %s != %s" % \
+                    (self.name, self.area, temp_node.area))
 
         if not withinTolerance(
                 self.peak_dynamic_power, temp_node.peak_dynamic_power):
-            print "WRONG: %s.peak_dynamic_power = %s != %s" % \
+            print("WRONG: %s.peak_dynamic_power = %s != %s" % \
                     (self.name, self.peak_dynamic_power,
-                     temp_node.peak_dynamic_power)
+                     temp_node.peak_dynamic_power))
 
         if not withinTolerance(
                 self.subthreshold_leakage, temp_node.subthreshold_leakage):
-            print "WRONG: %s.subthreshold_leakage = %s != %s" % \
+            print("WRONG: %s.subthreshold_leakage = %s != %s" % \
                     (self.name, self.subthreshold_leakage,
-                     temp_node.subthreshold_leakage)
+                     temp_node.subthreshold_leakage))
 
         if not withinTolerance(self.gate_leakage, temp_node.gate_leakage):
-            print "WRONG: %s.gate_leakage = %s != %s" % \
-                    (self.name, self.gate_leakage, temp_node.gate_leakage)
+            print("WRONG: %s.gate_leakage = %s != %s" % \
+                    (self.name, self.gate_leakage, temp_node.gate_leakage))
 
         if not withinTolerance(
                 self.runtime_dynamic_power, temp_node.runtime_dynamic_power):
-            print "WRONG: %s.runtime_dynamic_power = %s != %s" % \
+            print("WRONG: %s.runtime_dynamic_power = %s != %s" % \
                     (self.name, self.runtime_dynamic_power,
-                     temp_node.runtime_dynamic_power)
+                     temp_node.runtime_dynamic_power))
 
         if not withinTolerance(
                 self.runtime_dynamic_energy, temp_node.runtime_dynamic_energy):
-            print "WRONG: %s.runtime_dynamic_energy = %s != %s" % \
+            print("WRONG: %s.runtime_dynamic_energy = %s != %s" % \
                     (self.name, self.runtime_dynamic_energy,
-                     temp_node.runtime_dynamic_energy)
+                     temp_node.runtime_dynamic_energy))
 
         if not withinTolerance(
                 self.total_runtime_energy, temp_node.total_runtime_energy):
-            print "WRONG: %s.total_runtime_energy = %s != %s" % \
+            print("WRONG: %s.total_runtime_energy = %s != %s" % \
                     (self.name, self.total_runtime_energy,
-                     temp_node.total_runtime_energy)
+                     temp_node.total_runtime_energy))
 
 if len(args) < 1:
-    print "ERROR: Must specify a McPAT output file to verify"
+    print("ERROR: Must specify a McPAT output file to verify")
     exit(0)
 
 # check params
 mcpat_output = args[0];
 if not os.path.exists(mcpat_output):
-    print "ERROR: Output file does not exist: %s" % mcpat_output
+    print("ERROR: Output file does not exist: %s" % mcpat_output)
     exit(0)
 
 output_file_handle = open(mcpat_output, 'r')
@@ -195,7 +195,7 @@ for line in output_file_handle:
                     (curr_node.runtime_dynamic_power is None) or
                     (curr_node.runtime_dynamic_energy is None) or
                     (curr_node.total_runtime_energy is None)):
-                print "ERROR: Some value is not specified for %s" % curr_node.name
+                print("ERROR: Some value is not specified for %s" % curr_node.name)
                 curr_node.print_data()
                 exit(0)
 

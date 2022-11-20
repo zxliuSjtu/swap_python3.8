@@ -34,7 +34,7 @@ rout_ = 3
 for c in range(len(num_cores)):
 	for b in range(len(bench)):
 		for v in range(len(vc_)):
-			print ("cores: {2:d} b: {0:s} vc-{1:d}".format(bench_caps[b], vc_[v], num_cores[c]))
+			print(("cores: {2:d} b: {0:s} vc-{1:d}".format(bench_caps[b], vc_[v], num_cores[c])))
 			pkt_lat = 0
 			injection_rate = 0.02
 			low_load_latency = 0.0
@@ -54,7 +54,7 @@ for c in range(len(num_cores)):
 				# print packet_latency
 				pkt_lat = float(packet_latency)
 
-				print ("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate))
+				print(("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate)))
 				# Code to capture saturation throughput
 				if injection_rate == 0.02:
 					low_load_latency = float(pkt_lat)
@@ -75,5 +75,5 @@ for c in range(len(num_cores)):
 for c in range(len(num_cores)):
 	for b in range(len(bench)):
 		for v in range(len(vc_)):
-			print ("cores: {2:d} b: {0:s} vc-{1:d}".format(bench_caps[b], vc_[v], num_cores[c]))
-			print sat_thrpt[c*(len(bench)*len(vc_)) + b*(len(vc_)) + v]
+			print(("cores: {2:d} b: {0:s} vc-{1:d}".format(bench_caps[b], vc_[v], num_cores[c])))
+			print(sat_thrpt[c*(len(bench)*len(vc_)) + b*(len(vc_)) + v])

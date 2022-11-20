@@ -40,7 +40,7 @@
 #          Nathan Binkert
 #          Andrew Bardsley
 
-from __future__ import print_function
+
 
 from m5.defines import buildEnv
 from m5.params import *
@@ -102,7 +102,7 @@ def minorMakeOpClassSet(op_classes):
     def boxOpClass(op_class):
         return MinorOpClass(opClass=op_class)
 
-    return MinorOpClassSet(opClasses=map(boxOpClass, op_classes))
+    return MinorOpClassSet(opClasses=list(map(boxOpClass, op_classes)))
 
 class MinorFU(SimObject):
     type = 'MinorFU'

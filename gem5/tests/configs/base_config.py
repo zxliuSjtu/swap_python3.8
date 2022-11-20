@@ -49,7 +49,7 @@ from ruby import Ruby
 
 _have_kvm_support = 'BaseKvmCPU' in globals()
 
-class BaseSystem(object):
+class BaseSystem(object, metaclass=ABCMeta):
     """Base system builder.
 
     This class provides some basic functionality for creating an ARM
@@ -57,8 +57,6 @@ class BaseSystem(object):
     customization by defining separate methods for different parts of
     the initialization process.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, mem_mode='timing', mem_class=SimpleMemory,
                  cpu_class=TimingSimpleCPU, num_cpus=1, num_threads=1,
@@ -288,7 +286,7 @@ class BaseFSSystem(BaseSystem):
                                            response_latency = 20,
                                            tgts_per_mshr = 8)
                           for r in system.mem_ranges]
-            for i in xrange(len(system.physmem)):
+            for i in range(len(system.physmem)):
                 system.physmem[i].port = system.llc[i].mem_side
                 system.llc[i].cpu_side = system.membus.master
 

@@ -27,7 +27,7 @@
 # Authors: Jason Power
 
 
-from BaseTopology import BaseTopology
+from .BaseTopology import BaseTopology
 
 class Cluster(BaseTopology):
     """ A cluster is a group of nodes which are all one hop from eachother

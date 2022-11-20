@@ -35,7 +35,7 @@ system. Since there are no events, this "simulation" should finish immediately
 
 """
 
-from __future__ import print_function
+
 
 # import the m5 (gem5) library created when gem5 is built
 import m5

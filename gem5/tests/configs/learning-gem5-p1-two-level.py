@@ -55,4 +55,4 @@ def run_test(root):
         # For instance, sys.argv.append('--l2_size=512kB')
 
         # Execute the script we are wrapping
-        execfile(srcpath('configs/learning_gem5/part1/two_level.py'))
+        exec(compile(open(srcpath('configs/learning_gem5/part1/two_level.py'), "rb").read(), srcpath('configs/learning_gem5/part1/two_level.py'), 'exec'))

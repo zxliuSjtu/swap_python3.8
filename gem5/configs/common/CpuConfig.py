@@ -35,7 +35,7 @@
 #
 # Authors: Andreas Sandberg
 
-from __future__ import print_function
+
 
 from m5 import fatal
 import m5.objects
@@ -86,7 +86,7 @@ def print_cpu_list():
 
     print("Available CPU classes:")
     doc_wrapper = TextWrapper(initial_indent="\t\t", subsequent_indent="\t\t")
-    for name, cls in _cpu_classes.items():
+    for name, cls in list(_cpu_classes.items()):
         print("\t%s" % name)
 
         # Try to extract the class documentation from the class help
@@ -98,7 +98,7 @@ def print_cpu_list():
 
 def cpu_names():
     """Return a list of valid CPU names."""
-    return _cpu_classes.keys()
+    return list(_cpu_classes.keys())
 
 def config_etrace(cpu_cls, cpu_list, options):
     if issubclass(cpu_cls, m5.objects.DerivO3CPU):

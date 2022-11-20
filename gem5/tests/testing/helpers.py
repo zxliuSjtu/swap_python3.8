@@ -37,7 +37,7 @@
 #
 # Authors: Andreas Sandberg
 
-from __future__ import print_function
+
 
 import subprocess
 from threading import Timer

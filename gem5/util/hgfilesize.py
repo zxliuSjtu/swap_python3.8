@@ -20,7 +20,7 @@ def limit_file_size(ui, repo, node=None, **kwargs):
     limit = int(ui.config('limit_file_size', 'maximum_file_size', 1024*1024))
     existing_tip = context.changectx(repo, node).rev()
     new_tip = context.changectx(repo, 'tip').rev()
-    for rev in xrange(existing_tip, new_tip + 1):
+    for rev in range(existing_tip, new_tip + 1):
         ctx = context.changectx(repo, rev)
         for f in ctx.files():
             if f not in ctx:

@@ -35,7 +35,7 @@
 #
 # Authors: Andreas Sandberg
 
-from __future__ import print_function
+
 
 from multiprocessing import Process
 import sys

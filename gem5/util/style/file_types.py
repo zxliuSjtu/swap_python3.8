@@ -79,7 +79,7 @@ hash_bang = (
     )
 
 # the list of all languages that we detect
-all_languages = frozenset(lang_types.itervalues())
+all_languages = frozenset(iter(lang_types.values()))
 all_languages |= frozenset(lang for start,lang in lang_prefixes)
 all_languages |= frozenset(lang for start,lang in hash_bang)
 
@@ -180,10 +180,10 @@ def update_file(dst, src, language, mutator):
     orig_lines = []
 
     # grab all of the lines of the file and strip them of their line ending
-    old_lines = list(line.rstrip('\r\n') for line in src.xreadlines())
+    old_lines = list(line.rstrip('\r\n') for line in src)
     new_lines = list(mutator(old_lines, src.name, language))
 
-    for line in src.xreadlines():
+    for line in src:
         line = line
 
     if inplace:

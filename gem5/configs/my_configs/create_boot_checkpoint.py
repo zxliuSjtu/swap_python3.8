@@ -106,7 +106,7 @@ if __name__ == "__m5_main__":
     # While there is still something to do in the guest keep executing.
     # This is needed since we exit for the ROI begin/end
     while exit_event.getCause() != "m5_exit instruction encountered":
-        print("Exited because", exit_event.getCause())
+        print(("Exited because", exit_event.getCause()))
 
         # If the user pressed ctrl-c on the host, then we really should exit
         if exit_event.getCause() == "user interrupt received":

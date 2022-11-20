@@ -113,7 +113,7 @@ class qsub:
 
         if self.env:
             arg = '-v'
-            arg += ','.join([ '%s=%s' % i for i in self.env.iteritems() ])
+            arg += ','.join([ '%s=%s' % i for i in self.env.items() ])
             self.cmd.append(arg)
 
         if self.hold:

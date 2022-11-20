@@ -51,10 +51,10 @@ import os
 import re
 import sys
 
-import style
-import sort_includes
-from region import *
-from file_types import lang_type
+from . import style
+from . import sort_includes
+from .region import *
+from .file_types import lang_type
 
 
 def safefix(fix_func):
@@ -104,7 +104,7 @@ def _modified_regions(old, new):
     return regions
 
 
-class Verifier(object):
+class Verifier(object, metaclass=ABCMeta):
     """Base class for style verifiers
 
     Verifiers check for style violations and optionally fix such
@@ -120,8 +120,6 @@ class Verifier(object):
                  control the test (--fix-<foo>, --ignore-<foo>, etc.)
 
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, ui, opts, base=None):
         self.ui = ui
@@ -149,8 +147,8 @@ class Verifier(object):
     def open(self, filename, mode):
         try:
             f = file(filename, mode)
-        except OSError, msg:
-            print 'could not open file %s: %s' % (filename, msg)
+        except OSError as msg:
+            print('could not open file %s: %s' % (filename, msg))
             return None
 
         return f
@@ -352,7 +350,7 @@ class SortedIncludes(Verifier):
             close = True
         norm_fname = self.normalize_filename(filename)
 
-        old = [ l.rstrip('\n') for l in fobj.xreadlines() ]
+        old = [ l.rstrip('\n') for l in fobj ]
         if close:
             fobj.close()
 

@@ -41,4 +41,4 @@ def run_test(root):
         os.chdir(os.path.join(os.path.dirname(__file__), "../"))
 
         # Execute the script we are wrapping
-        execfile(srcpath('configs/learning_gem5/part1/simple.py'))
+        exec(compile(open(srcpath('configs/learning_gem5/part1/simple.py'), "rb").read(), srcpath('configs/learning_gem5/part1/simple.py'), 'exec'))

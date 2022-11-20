@@ -26,7 +26,7 @@
 #
 # Authors: Korey Sewell
 
-from __future__ import print_function
+
 
 m5.util.addToPath('../configs/common')
 

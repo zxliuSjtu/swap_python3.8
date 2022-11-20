@@ -36,7 +36,7 @@ else:
 
 while 1:
     try:
-        line = raw_input("[BASIC] ")
+        line = input("[BASIC] ")
     except EOFError:
         raise SystemExit
     if not line: continue

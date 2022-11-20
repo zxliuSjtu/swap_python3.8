@@ -5,7 +5,7 @@ loaders.
 
 Discovers and runs all tests from a given root directory.
 '''
-from __future__ import print_function
+
 
 import sys
 import os

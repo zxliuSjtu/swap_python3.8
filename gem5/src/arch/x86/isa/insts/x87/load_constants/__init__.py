@@ -42,5 +42,5 @@ microcode = '''
 # X86 microcode
 '''
 for category in categories:
-    exec "import %s as cat" % category
+    exec("import %s as cat" % category)
     microcode += cat.microcode

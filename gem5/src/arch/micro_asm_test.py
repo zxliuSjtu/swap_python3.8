@@ -26,7 +26,7 @@
 #
 # Authors: Gabe Black
 
-from __future__ import print_function
+
 
 from micro_asm import MicroAssembler, Combinational_Macroop, Rom_Macroop, Rom
 

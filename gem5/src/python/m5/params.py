@@ -59,7 +59,7 @@
 #
 #####################################################################
 
-from __future__ import print_function
+
 
 import copy
 import datetime
@@ -68,9 +68,9 @@ import sys
 import time
 import math
 
-import proxy
-import ticks
-from util import *
+from . import proxy
+from . import ticks
+from .util import *
 
 def isSimObject(*args, **kwargs):
     return SimObject.isSimObject(*args, **kwargs)
@@ -93,8 +93,7 @@ class MetaParamValue(type):
 
 # Dummy base class to identify types that are legitimate for SimObject
 # parameters.
-class ParamValue(object):
-    __metaclass__ = MetaParamValue
+class ParamValue(object, metaclass=MetaParamValue):
     cmd_line_settable = False
 
     # Generate the code needed as a prerequisite for declaring a C++
@@ -155,23 +154,23 @@ class ParamDesc(object):
                 self.default = args[0]
                 self.desc = args[1]
             else:
-                raise TypeError, 'too many arguments'
+                raise TypeError('too many arguments')
 
-        if kwargs.has_key('desc'):
+        if 'desc' in kwargs:
             assert(not hasattr(self, 'desc'))
             self.desc = kwargs['desc']
             del kwargs['desc']
 
-        if kwargs.has_key('default'):
+        if 'default' in kwargs:
             assert(not hasattr(self, 'default'))
             self.default = kwargs['default']
             del kwargs['default']
 
         if kwargs:
-            raise TypeError, 'extra unknown kwargs %s' % kwargs
+            raise TypeError('extra unknown kwargs %s' % kwargs)
 
         if not hasattr(self, 'desc'):
-            raise TypeError, 'desc attribute missing'
+            raise TypeError('desc attribute missing')
 
     def __getattr__(self, attr):
         if attr == 'ptype':
@@ -180,8 +179,8 @@ class ParamDesc(object):
             self.ptype = ptype
             return ptype
 
-        raise AttributeError, "'%s' object has no attribute '%s'" % \
-              (type(self).__name__, attr)
+        raise AttributeError("'%s' object has no attribute '%s'" % \
+              (type(self).__name__, attr))
 
     def example_str(self):
         if hasattr(self.ptype, "ex_str"):
@@ -231,11 +230,9 @@ class ParamDesc(object):
 # that the value is a vector (list) of the specified type instead of a
 # single value.
 
-class VectorParamValue(list):
-    __metaclass__ = MetaParamValue
+class VectorParamValue(list, metaclass=MetaParamValue):
     def __setattr__(self, attr, value):
-        raise AttributeError, \
-              "Not allowed to set %s on '%s'" % (attr, type(self).__name__)
+        raise AttributeError("Not allowed to set %s on '%s'" % (attr, type(self).__name__))
 
     def config_value(self):
         return [v.config_value() for v in self]
@@ -461,7 +458,7 @@ class NumericParamValue(ParamValue):
         return float(self.value)
 
     def __long__(self):
-        return long(self.value)
+        return int(self.value)
 
     def __int__(self):
         return int(self.value)
@@ -533,23 +530,22 @@ class CheckedIntType(MetaParamValue):
 # class is subclassed to generate parameter classes with specific
 # bounds.  Initialization of the min and max bounds is done in the
 # metaclass CheckedIntType.__init__.
-class CheckedInt(NumericParamValue):
-    __metaclass__ = CheckedIntType
+class CheckedInt(NumericParamValue, metaclass=CheckedIntType):
     cmd_line_settable = True
 
     def _check(self):
         if not self.min <= self.value <= self.max:
-            raise TypeError, 'Integer param out of bounds %d < %d < %d' % \
-                  (self.min, self.value, self.max)
+            raise TypeError('Integer param out of bounds %d < %d < %d' % \
+                  (self.min, self.value, self.max))
 
     def __init__(self, value):
         if isinstance(value, str):
             self.value = convert.toInteger(value)
-        elif isinstance(value, (int, long, float, NumericParamValue)):
-            self.value = long(value)
+        elif isinstance(value, (int, float, NumericParamValue)):
+            self.value = int(value)
         else:
-            raise TypeError, "Can't convert object of type %s to CheckedInt" \
-                  % type(value).__name__
+            raise TypeError("Can't convert object of type %s to CheckedInt" \
+                  % type(value).__name__)
         self._check()
 
     def __call__(self, value):
@@ -562,7 +558,7 @@ class CheckedInt(NumericParamValue):
         code('#include "base/types.hh"')
 
     def getValue(self):
-        return long(self.value)
+        return int(self.value)
 
 class Int(CheckedInt):      cxx_type = 'int';      size = 32; unsigned = False
 class Unsigned(CheckedInt): cxx_type = 'unsigned'; size = 32; unsigned = True
@@ -611,11 +607,11 @@ class Float(ParamValue, float):
     cmd_line_settable = True
 
     def __init__(self, value):
-        if isinstance(value, (int, long, float, NumericParamValue, Float, str)):
+        if isinstance(value, (int, float, NumericParamValue, Float, str)):
             self.value = float(value)
         else:
-            raise TypeError, "Can't convert object of type %s to Float" \
-                  % type(value).__name__
+            raise TypeError("Can't convert object of type %s to Float" \
+                  % type(value).__name__)
 
     def __call__(self, value):
         self.__init__(value)
@@ -677,7 +673,7 @@ class Addr(CheckedInt):
             except (TypeError, ValueError):
                 # Convert number to string and use long() to do automatic
                 # base conversion (requires base=0 for auto-conversion)
-                self.value = long(str(value), base=0)
+                self.value = int(str(value), base=0)
 
         self._check()
     def __add__(self, other):
@@ -689,8 +685,8 @@ class Addr(CheckedInt):
         try:
             val = convert.toMemorySize(value)
         except TypeError:
-            val = long(value)
-        return "0x%x" % long(val)
+            val = int(value)
+        return "0x%x" % int(val)
 
 class AddrRange(ParamValue):
     cxx_type = 'AddrRange'
@@ -711,7 +707,7 @@ class AddrRange(ParamValue):
             elif 'size' in kwargs:
                 self.end = self.start + Addr(kwargs.pop('size')) - 1
             else:
-                raise TypeError, "Either end or size must be specified"
+                raise TypeError("Either end or size must be specified")
 
             # Now on to the optional bit
             if 'intlvHighBit' in kwargs:
@@ -742,10 +738,10 @@ class AddrRange(ParamValue):
             self.start = Addr(args[0])
             self.end = Addr(args[1])
         else:
-            raise TypeError, "Too many arguments specified"
+            raise TypeError("Too many arguments specified")
 
         if kwargs:
-            raise TypeError, "Too many keywords: %s" % kwargs.keys()
+            raise TypeError("Too many keywords: %s" % list(kwargs.keys()))
 
     def __str__(self):
         return '%s:%s:%s:%s:%s:%s' \
@@ -754,7 +750,7 @@ class AddrRange(ParamValue):
 
     def size(self):
         # Divide the size by the size of the interleaving slice
-        return (long(self.end) - long(self.start) + 1) >> self.intlvBits
+        return (int(self.end) - int(self.start) + 1) >> self.intlvBits
 
     @classmethod
     def cxx_predecls(cls, code):
@@ -800,7 +796,7 @@ class AddrRange(ParamValue):
         # Go from the Python class to the wrapped C++ class
         from _m5.range import AddrRange
 
-        return AddrRange(long(self.start), long(self.end),
+        return AddrRange(int(self.start), int(self.end),
                          int(self.intlvHighBit), int(self.xorHighBit),
                          int(self.intlvBits), int(self.intlvMatch))
 
@@ -829,7 +825,7 @@ class Bool(ParamValue):
 
     # implement truth value testing for Bool parameters so that these params
     # evaluate correctly during the python configuration phase
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.value)
 
     def ini_str(self):
@@ -851,7 +847,7 @@ class Bool(ParamValue):
         code('%s to_bool(%s, %s);' % (ret, src, dest))
 
 def IncEthernetAddr(addr, val = 1):
-    bytes = map(lambda x: int(x, 16), addr.split(':'))
+    bytes = [int(x, 16) for x in addr.split(':')]
     bytes[5] += val
     for i in (5, 4, 3, 2, 1):
         val,rem = divmod(bytes[i], 256)
@@ -860,7 +856,7 @@ def IncEthernetAddr(addr, val = 1):
             break
         bytes[i - 1] += val
     assert(bytes[0] <= 255)
-    return ':'.join(map(lambda x: '%02x' % x, bytes))
+    return ':'.join(['%02x' % x for x in bytes])
 
 _NextEthernetAddr = "00:90:00:00:00:01"
 def NextEthernetAddr():
@@ -885,15 +881,15 @@ class EthernetAddr(ParamValue):
             return
 
         if not isinstance(value, str):
-            raise TypeError, "expected an ethernet address and didn't get one"
+            raise TypeError("expected an ethernet address and didn't get one")
 
         bytes = value.split(':')
         if len(bytes) != 6:
-            raise TypeError, 'invalid ethernet address %s' % value
+            raise TypeError('invalid ethernet address %s' % value)
 
         for byte in bytes:
             if not 0 <= int(byte, base=16) <= 0xff:
-                raise TypeError, 'invalid ethernet address %s' % value
+                raise TypeError('invalid ethernet address %s' % value)
 
         self.value = value
 
@@ -939,7 +935,7 @@ class IpAddress(ParamValue):
             try:
                 self.ip = convert.toIpAddress(value)
             except TypeError:
-                self.ip = long(value)
+                self.ip = int(value)
         self.verifyIp()
 
     def __call__(self, value):
@@ -966,7 +962,7 @@ class IpAddress(ParamValue):
 
     def verifyIp(self):
         if self.ip < 0 or self.ip >= (1 << 32):
-            raise TypeError, "invalid ip address %#08x" % self.ip
+            raise TypeError("invalid ip address %#08x" % self.ip)
 
     def getValue(self):
         from _m5.net import IpAddress
@@ -991,7 +987,7 @@ class IpNetmask(IpAddress):
             elif elseVal:
                 setattr(self, key, elseVal)
             else:
-                raise TypeError, "No value set for %s" % key
+                raise TypeError("No value set for %s" % key)
 
         if len(args) == 0:
             handle_kwarg(self, kwargs, 'ip')
@@ -1000,7 +996,7 @@ class IpNetmask(IpAddress):
         elif len(args) == 1:
             if kwargs:
                 if not 'ip' in kwargs and not 'netmask' in kwargs:
-                    raise TypeError, "Invalid arguments"
+                    raise TypeError("Invalid arguments")
                 handle_kwarg(self, kwargs, 'ip', args[0])
                 handle_kwarg(self, kwargs, 'netmask', args[0])
             elif isinstance(args[0], IpNetmask):
@@ -1013,10 +1009,10 @@ class IpNetmask(IpAddress):
             self.ip = args[0]
             self.netmask = args[1]
         else:
-            raise TypeError, "Too many arguments specified"
+            raise TypeError("Too many arguments specified")
 
         if kwargs:
-            raise TypeError, "Too many keywords: %s" % kwargs.keys()
+            raise TypeError("Too many keywords: %s" % list(kwargs.keys()))
 
         self.verify()
 
@@ -1041,7 +1037,7 @@ class IpNetmask(IpAddress):
     def verify(self):
         self.verifyIp()
         if self.netmask < 0 or self.netmask > 32:
-            raise TypeError, "invalid netmask %d" % netmask
+            raise TypeError("invalid netmask %d" % netmask)
 
     def getValue(self):
         from _m5.net import IpNetmask
@@ -1065,7 +1061,7 @@ class IpWithPort(IpAddress):
             elif elseVal:
                 setattr(self, key, elseVal)
             else:
-                raise TypeError, "No value set for %s" % key
+                raise TypeError("No value set for %s" % key)
 
         if len(args) == 0:
             handle_kwarg(self, kwargs, 'ip')
@@ -1074,7 +1070,7 @@ class IpWithPort(IpAddress):
         elif len(args) == 1:
             if kwargs:
                 if not 'ip' in kwargs and not 'port' in kwargs:
-                    raise TypeError, "Invalid arguments"
+                    raise TypeError("Invalid arguments")
                 handle_kwarg(self, kwargs, 'ip', args[0])
                 handle_kwarg(self, kwargs, 'port', args[0])
             elif isinstance(args[0], IpWithPort):
@@ -1087,10 +1083,10 @@ class IpWithPort(IpAddress):
             self.ip = args[0]
             self.port = args[1]
         else:
-            raise TypeError, "Too many arguments specified"
+            raise TypeError("Too many arguments specified")
 
         if kwargs:
-            raise TypeError, "Too many keywords: %s" % kwargs.keys()
+            raise TypeError("Too many keywords: %s" % list(kwargs.keys()))
 
         self.verify()
 
@@ -1115,7 +1111,7 @@ class IpWithPort(IpAddress):
     def verify(self):
         self.verifyIp()
         if self.port < 0 or self.port > 0xffff:
-            raise TypeError, "invalid port %d" % self.port
+            raise TypeError("invalid port %d" % self.port)
 
     def getValue(self):
         from _m5.net import IpWithPort
@@ -1141,7 +1137,7 @@ def parse_time(value):
     if isinstance(value, struct_time):
         return value
 
-    if isinstance(value, (int, long)):
+    if isinstance(value, int):
         return gmtime(value)
 
     if isinstance(value, (datetime, date)):
@@ -1157,7 +1153,7 @@ def parse_time(value):
             except ValueError:
                 pass
 
-    raise ValueError, "Could not parse '%s' as a time" % value
+    raise ValueError("Could not parse '%s' as a time" % value)
 
 class Time(ParamValue):
     cxx_type = 'tm'
@@ -1224,24 +1220,24 @@ class MetaEnum(MetaParamValue):
         return cls
 
     def __init__(cls, name, bases, init_dict):
-        if init_dict.has_key('map'):
+        if 'map' in init_dict:
             if not isinstance(cls.map, dict):
-                raise TypeError, "Enum-derived class attribute 'map' " \
-                      "must be of type dict"
+                raise TypeError("Enum-derived class attribute 'map' " \
+                      "must be of type dict")
             # build list of value strings from map
-            cls.vals = cls.map.keys()
+            cls.vals = list(cls.map.keys())
             cls.vals.sort()
-        elif init_dict.has_key('vals'):
+        elif 'vals' in init_dict:
             if not isinstance(cls.vals, list):
-                raise TypeError, "Enum-derived class attribute 'vals' " \
-                      "must be of type list"
+                raise TypeError("Enum-derived class attribute 'vals' " \
+                      "must be of type list")
             # build string->value map from vals sequence
             cls.map = {}
             for idx,val in enumerate(cls.vals):
                 cls.map[val] = idx
         else:
-            raise TypeError, "Enum-derived class must define "\
-                  "attribute 'map' or 'vals'"
+            raise TypeError("Enum-derived class must define "\
+                  "attribute 'map' or 'vals'")
 
         cls.cxx_type = 'Enums::%s' % name
 
@@ -1341,8 +1337,7 @@ module_init(py::module &m_internal)
 
 
 # Base class for enum types.
-class Enum(ParamValue):
-    __metaclass__ = MetaEnum
+class Enum(ParamValue, metaclass=MetaEnum):
     vals = []
     cmd_line_settable = True
 
@@ -1357,8 +1352,8 @@ class Enum(ParamValue):
 
     def __init__(self, value):
         if value not in self.map:
-            raise TypeError, "Enum param got bad value '%s' (not in %s)" \
-                  % (value, self.vals)
+            raise TypeError("Enum param got bad value '%s' (not in %s)" \
+                  % (value, self.vals))
         self.value = value
 
     def __call__(self, value):
@@ -1372,7 +1367,7 @@ class Enum(ParamValue):
     @classmethod
     def cxx_ini_parse(cls, code, src, dest, ret):
         code('if (false) {')
-        for elem_name in cls.map.iterkeys():
+        for elem_name in cls.map.keys():
             code('} else if (%s == "%s") {' % (src, elem_name))
             code.indent()
             code('%s = Enums::%s;' % (dest, elem_name))
@@ -1407,7 +1402,7 @@ class TickParamValue(NumericParamValue):
         return value
 
     def getValue(self):
-        return long(self.value)
+        return int(self.value)
 
     @classmethod
     def cxx_ini_predecls(cls, code):
@@ -1445,14 +1440,14 @@ class Latency(TickParamValue):
             return self
         if attr == 'frequency':
             return Frequency(self)
-        raise AttributeError, "Latency object has no attribute '%s'" % attr
+        raise AttributeError("Latency object has no attribute '%s'" % attr)
 
     def getValue(self):
         if self.ticks or self.value == 0:
             value = self.value
         else:
             value = ticks.fromSeconds(self.value)
-        return long(value)
+        return int(value)
 
     def config_value(self):
         return self.getValue()
@@ -1487,7 +1482,7 @@ class Frequency(TickParamValue):
             return self
         if attr in ('latency', 'period'):
             return Latency(self)
-        raise AttributeError, "Frequency object has no attribute '%s'" % attr
+        raise AttributeError("Frequency object has no attribute '%s'" % attr)
 
     # convert latency to ticks
     def getValue(self):
@@ -1495,7 +1490,7 @@ class Frequency(TickParamValue):
             value = self.value
         else:
             value = ticks.fromSeconds(1.0 / self.value)
-        return long(value)
+        return int(value)
 
     def config_value(self):
         return self.getValue()
@@ -1532,7 +1527,7 @@ class Clock(TickParamValue):
             return Frequency(self)
         if attr in ('latency', 'period'):
             return Latency(self)
-        raise AttributeError, "Frequency object has no attribute '%s'" % attr
+        raise AttributeError("Frequency object has no attribute '%s'" % attr)
 
     def getValue(self):
         return self.period.getValue()
@@ -1661,8 +1656,7 @@ class MemoryBandwidth(float,ParamValue):
 # make_param_value() above that lets these be assigned where a
 # SimObject is required.
 # only one copy of a particular node
-class NullSimObject(object):
-    __metaclass__ = Singleton
+class NullSimObject(object, metaclass=Singleton):
     _name = 'Null'
 
     def __call__(cls):
@@ -1754,8 +1748,8 @@ class PortRef(object):
         if attr == 'peerObj':
             # shorthand for proxies
             return self.peer.simobj
-        raise AttributeError, "'%s' object has no attribute '%s'" % \
-              (self.__class__.__name__, attr)
+        raise AttributeError("'%s' object has no attribute '%s'" % \
+              (self.__class__.__name__, attr))
 
     # Full connection is symmetric (both ways).  Called via
     # SimObject.__setattr__ as a result of a port assignment, e.g.,
@@ -1775,9 +1769,8 @@ class PortRef(object):
             if other.peer is not self:
                 other.connect(self)
         else:
-            raise TypeError, \
-                  "assigning non-port reference '%s' to port '%s'" \
-                  % (other, self)
+            raise TypeError("assigning non-port reference '%s' to port '%s'" \
+                  % (other, self))
 
     # Allow a master/slave port pair to be spliced between
     # a port and its connected peer. Useful operation for connecting
@@ -1803,14 +1796,13 @@ class PortRef(object):
                      panic("Port %s has unknown role, "+\
                            "cannot splice in new peers\n", self)
             else:
-                raise TypeError, \
-                      "Splicing non-port references '%s','%s' to port '%s'"\
-                      % (new_peer, peers_new_peer, self)
+                raise TypeError("Splicing non-port references '%s','%s' to port '%s'"\
+                      % (new_peer, peers_new_peer, self))
         else:
             fatal("Port %s not connected, cannot splice in new peers\n", self)
 
     def clone(self, simobj, memo):
-        if memo.has_key(self):
+        if self in memo:
             return memo[self]
         newRef = copy.copy(self)
         memo[self] = newRef
@@ -1849,9 +1841,8 @@ class PortRef(object):
 
         # check that we connect a master to a slave
         if self.role == peer.role:
-            raise TypeError, \
-                "cannot connect '%s' and '%s' due to identical role '%s'" \
-                % (peer, self, self.role)
+            raise TypeError("cannot connect '%s' and '%s' due to identical role '%s'" \
+                % (peer, self, self.role))
 
         try:
             # self is always the master and peer the slave
@@ -1904,7 +1895,7 @@ class VectorPortRef(object):
 
     def __getitem__(self, key):
         if not isinstance(key, int):
-            raise TypeError, "VectorPort index must be integer"
+            raise TypeError("VectorPort index must be integer")
         if key >= len(self.elements):
             # need to extend list
             ext = [VectorPortElementRef(self.simobj, self.name, self.role, i)
@@ -1917,7 +1908,7 @@ class VectorPortRef(object):
 
     def __setitem__(self, key, value):
         if not isinstance(key, int):
-            raise TypeError, "VectorPort index must be integer"
+            raise TypeError("VectorPort index must be integer")
         self[key].connect(value)
 
     def connect(self, other):
@@ -1932,7 +1923,7 @@ class VectorPortRef(object):
             self._get_next().connect(other)
 
     def clone(self, simobj, memo):
-        if memo.has_key(self):
+        if self in memo:
             return memo[self]
         newRef = copy.copy(self)
         memo[self] = newRef
@@ -1982,7 +1973,7 @@ class MasterPort(Port):
             self.desc = args[0]
             self.role = 'MASTER'
         else:
-            raise TypeError, 'wrong number of arguments'
+            raise TypeError('wrong number of arguments')
 
 class SlavePort(Port):
     # SlavePort("description")
@@ -1991,7 +1982,7 @@ class SlavePort(Port):
             self.desc = args[0]
             self.role = 'SLAVE'
         else:
-            raise TypeError, 'wrong number of arguments'
+            raise TypeError('wrong number of arguments')
 
 # VectorPort description object.  Like Port, but represents a vector
 # of connections (e.g., as on a XBar).
@@ -2010,7 +2001,7 @@ class VectorMasterPort(VectorPort):
             self.role = 'MASTER'
             VectorPort.__init__(self, *args)
         else:
-            raise TypeError, 'wrong number of arguments'
+            raise TypeError('wrong number of arguments')
 
 class VectorSlavePort(VectorPort):
     # VectorSlavePort("description")
@@ -2020,14 +2011,12 @@ class VectorSlavePort(VectorPort):
             self.role = 'SLAVE'
             VectorPort.__init__(self, *args)
         else:
-            raise TypeError, 'wrong number of arguments'
+            raise TypeError('wrong number of arguments')
 
 # 'Fake' ParamDesc for Port references to assign to the _pdesc slot of
 # proxy objects (via set_param_desc()) so that proxy error messages
 # make sense.
-class PortParamDesc(object):
-    __metaclass__ = Singleton
-
+class PortParamDesc(object, metaclass=Singleton):
     ptype_str = 'Port'
     ptype = Port
 
@@ -2057,4 +2046,4 @@ __all__ = ['Param', 'VectorParam',
            'MasterPort', 'SlavePort',
            'VectorMasterPort', 'VectorSlavePort']
 
-import SimObject
+from . import SimObject

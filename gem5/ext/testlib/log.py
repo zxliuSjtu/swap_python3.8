@@ -30,7 +30,7 @@
 This module supplies the global `test_log` object which all testing
 results and messages are reported through.
 '''
-import wrappers
+from . import wrappers
 
 
 class LogLevel():
@@ -55,14 +55,13 @@ class RecordTypeCounterMetaclass(type):
         RecordTypeCounterMetaclass.counter += 1
 
 
-class Record(object):
+class Record(object, metaclass=RecordTypeCounterMetaclass):
     '''
     A generic object that is passed to the :class:`Log` and its handlers.
 
     ..note: Although not statically enforced, all items in the record should be
         be pickleable. This enables logging accross multiple processes.
     '''
-    __metaclass__ = RecordTypeCounterMetaclass
 
     def __init__(self, **data):
         self.data = data
@@ -129,7 +128,7 @@ class Log(object):
             raise Exception('The log has been closed'
                 ' and is no longer available.')
 
-        map(lambda handler:handler.prehandle(), self.handlers)
+        list(map(lambda handler:handler.prehandle(), self.handlers))
         for handler in self.handlers:
             handler.handle(record)
             handler.posthandle()

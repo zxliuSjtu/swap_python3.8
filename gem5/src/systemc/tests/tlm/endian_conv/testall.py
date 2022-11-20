@@ -93,7 +93,7 @@ def txn_generator(nr):
   pr_enabled = 0.5
   bus_widths = [1, 2, 4, 8, 16]
   data_widths = [1, 2, 4, 8, 16] + [1, 2, 4, 8] + [1, 2, 4] + [1, 2]
-  lengths = range(1,33) + range(1,17) + range(1,9) + range(1,5) + range(1,3)
+  lengths = list(range(1,33)) + list(range(1,17)) + list(range(1,9)) + list(range(1,5)) + list(range(1,3))
   pr_short_be = 0.2
   pr_stream = 0.1
   nr_generated = 0
@@ -105,8 +105,8 @@ def txn_generator(nr):
       if data_width <= bus_width:  break
       if random.random() < 0.25:  break
     length = random.choice(lengths)
-    addr_base = random.choice(range(0,1024,bus_width))
-    addr_offset = random.choice(range(bus_width)+[0]*(bus_width/2))
+    addr_base = random.choice(list(range(0,1024,bus_width)))
+    addr_offset = random.choice(list(range(bus_width))+[0]*(bus_width/2))
     txn = transaction(
       bus_width = bus_width,
       data_width = data_width,
@@ -137,7 +137,7 @@ def txn_generator(nr):
 # test code for transaction generator
 if False:
   for t in txn_generator(20):
-    print t
+    print(t)
   raise Exception
 # end test code
 
@@ -288,15 +288,15 @@ def __FRAG__randinterleave(stream_txn):
     yield txns[0]
     yield txns[1]
 
-fragmenters = [globals()[n] for n in globals().keys() if n[:8]=="__FRAG__"]
+fragmenters = [globals()[n] for n in list(globals().keys()) if n[:8]=="__FRAG__"]
 
 # test code for fragmenters
 if False:
   for t in txn_generator(1):
-    print t
-    print
+    print(t)
+    print()
     for u in fragmenters[4](t):
-      print u
+      print(u)
   raise Exception
 # end test code
 
@@ -338,7 +338,7 @@ def __CHCK__local_single(txn):
   if txn.length != txn.data_width:  return False
   return True
 
-all_converters = [globals()[n] for n in globals().keys() if n[:8]=="__CHCK__"]
+all_converters = [globals()[n] for n in list(globals().keys()) if n[:8]=="__CHCK__"]
 for x in all_converters:  x.usage = 0
 
 
@@ -401,16 +401,16 @@ actual memory:
 
 from sys import argv
 
-print "Testing Endianness Conversion Functions"
-print "March 2008"
-print "OSCI TLM-2"
+print("Testing Endianness Conversion Functions")
+print("March 2008")
+print("OSCI TLM-2")
 
 try:  nr_txns_to_test = int(argv[1])
 except:
-  print "No command line input for number of tests, using default"
+  print("No command line input for number of tests, using default")
   nr_txns_to_test = 1000
 
-print "Number to test:", nr_txns_to_test
+print("Number to test:", nr_txns_to_test)
 
 # generate and test a number of transactions
 for txn in txn_generator(nr_txns_to_test):
@@ -445,12 +445,12 @@ golden memory:
 actual memory:
 %s""" % (fragmenter, txn, initial_memory, golden_memory_state, memory_state))
 
-  print ".",
-print
+  print(".", end=' ')
+print()
 
 
-print "Conversion functions usage frequency:"
+print("Conversion functions usage frequency:")
 for c in all_converters:
-  print c.nr, c.__name__, c.usage
+  print(c.nr, c.__name__, c.usage)
 
 

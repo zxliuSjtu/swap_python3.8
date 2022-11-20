@@ -169,8 +169,7 @@ def do_check_style(hgui, repo, *pats, **opts):
 
 def check_hook(hooktype):
     if hooktype not in ('pretxncommit', 'pre-qrefresh'):
-        raise AttributeError, \
-              "This hook is not meant for %s" % hooktype
+        raise AttributeError("This hook is not meant for %s" % hooktype)
 
 # This function provides a hook that is called before transaction
 # commit and on qrefresh
@@ -180,7 +179,7 @@ def check_style(ui, repo, hooktype, **kwargs):
 
     try:
         return do_check_style(ui, repo, **args)
-    except Exception, e:
+    except Exception as e:
         import traceback
         traceback.print_exc()
         return True
@@ -217,6 +216,6 @@ cmdtable = {
 }
 
 if __name__ == '__main__':
-    print >> sys.stderr, "This file cannot be used from the command line. Use"
-    print >> sys.stderr, "style.py instead."
+    print("This file cannot be used from the command line. Use", file=sys.stderr)
+    print("style.py instead.", file=sys.stderr)
     sys.exit(1)

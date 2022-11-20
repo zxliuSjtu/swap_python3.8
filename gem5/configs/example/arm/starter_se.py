@@ -43,7 +43,7 @@ Research Starter Kit on System Modeling. More information can be found
 at: http://www.arm.com/ResearchEnablement/SystemModeling
 """
 
-from __future__ import print_function
+
 
 import os
 import m5
@@ -186,7 +186,7 @@ def main():
 
     parser.add_argument("commands_to_run", metavar="command(s)", nargs='*',
                         help="Command(s) to run")
-    parser.add_argument("--cpu", type=str, choices=cpu_types.keys(),
+    parser.add_argument("--cpu", type=str, choices=list(cpu_types.keys()),
                         default="atomic",
                         help="CPU model to use")
     parser.add_argument("--cpu-freq", type=str, default="4GHz")

@@ -47,12 +47,12 @@ import subprocess
 import sys
 import traceback
 
-from results import UnitResult
-from helpers import *
+from .results import UnitResult
+from .helpers import *
 
 _test_base = os.path.join(os.path.dirname(__file__), "..")
 
-class TestUnit(object):
+class TestUnit(object, metaclass=ABCMeta):
     """Base class for all test units.
 
     A test unit is a part of a larger test case. Test cases usually
@@ -65,8 +65,6 @@ class TestUnit(object):
     exceptions.
 
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, name, ref_dir, test_dir, skip=False):
         self.name = name

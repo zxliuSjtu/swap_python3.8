@@ -30,10 +30,10 @@ import os
 import pickle
 import xml.sax.saxutils
 
-from config import config
-import helper
-import state
-import log
+from .config import config
+from . import helper
+from . import state
+from . import log
 
 def _create_uid_index(iterable):
     index = {}
@@ -214,7 +214,7 @@ class JUnitTestSuites(XMLElement):
         results = internal_results.aggregate_test_results()
 
         self.attributes = []
-        for result, tests in results.items():
+        for result, tests in list(results.items()):
             self.attributes.append(self.result_attribute(result,
                     str(len(tests))))
 
@@ -240,7 +240,7 @@ class JUnitTestSuite(JUnitTestSuites):
         self.attributes = [
             XMLAttribute('name', suite_result.name)
         ]
-        for result, tests in results.items():
+        for result, tests in list(results.items()):
             self.attributes.append(self.result_attribute(result,
                     str(len(tests))))
 

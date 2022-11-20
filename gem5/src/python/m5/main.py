@@ -38,7 +38,7 @@
 #
 # Authors: Nathan Binkert
 
-from __future__ import print_function
+
 
 import code
 import datetime

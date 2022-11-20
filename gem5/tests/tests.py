@@ -37,7 +37,7 @@
 #
 # Authors: Andreas Sandberg
 
-from __future__ import print_function
+
 
 import argparse
 import sys
@@ -337,7 +337,7 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    for key, (impl, cmd_parser) in _commands.items():
+    for key, (impl, cmd_parser) in list(_commands.items()):
         cmd_parser(subparsers)
 
     args = parser.parse_args()

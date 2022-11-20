@@ -29,11 +29,11 @@
 import os
 import itertools
 
-import config
+from . import config
 
 class UID(object):
     sep = ':'
-    type_idx, path_idx = range(2)
+    type_idx, path_idx = list(range(2))
 
     def __init__(self, path, *args):
         self.path = self._shorten_path(path)

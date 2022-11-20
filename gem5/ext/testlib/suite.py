@@ -27,8 +27,8 @@
 # Authors: Sean Wilson
 
 
-import helper
-import runner as runner_mod
+from . import helper
+from . import runner as runner_mod
 
 class TestSuite(object):
     '''

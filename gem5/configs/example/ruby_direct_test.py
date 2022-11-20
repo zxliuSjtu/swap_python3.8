@@ -28,7 +28,7 @@
 # Authors: Ron Dreslinski
 #          Brad Beckmann
 
-from __future__ import print_function
+
 
 import m5
 from m5.objects import *

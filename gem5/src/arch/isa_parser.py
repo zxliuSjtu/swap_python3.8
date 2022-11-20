@@ -39,7 +39,7 @@
 #
 # Authors: Steve Reinhardt
 
-from __future__ import with_statement, print_function
+
 import os
 import sys
 import re
@@ -142,14 +142,14 @@ class Template(object):
             del myDict['snippets']
 
             snippetLabels = [l for l in labelRE.findall(template)
-                             if d.snippets.has_key(l)]
+                             if l in d.snippets]
 
             snippets = dict([(s, self.parser.mungeSnippet(d.snippets[s]))
                              for s in snippetLabels])
 
             myDict.update(snippets)
 
-            compositeCode = ' '.join(map(str, snippets.values()))
+            compositeCode = ' '.join(map(str, list(snippets.values())))
 
             # Add in template itself in case it references any
             # operands explicitly (like Mem)
@@ -213,7 +213,7 @@ class Template(object):
             # if the argument is an object, we use its attribute map.
             myDict.update(d.__dict__)
         else:
-            raise TypeError, "Template.subst() arg must be or have dictionary"
+            raise TypeError("Template.subst() arg must be or have dictionary")
         return template % myDict
 
     # Convert to string.
@@ -239,7 +239,7 @@ class Format(object):
                 exec _code in _context, my_locals
                 return my_locals\n''' % param_list
         c = compile(f, label + ' wrapper', 'exec')
-        exec c
+        exec(c)
         self.func = defInst
 
     def defineInst(self, parser, name, args, lineno):
@@ -252,11 +252,11 @@ class Format(object):
         context.update({ 'name' : name, 'Name' : Name })
         try:
             vars = self.func(self.user_code, context, *args[0], **args[1])
-        except Exception, exc:
+        except Exception as exc:
             if debug:
                 raise
             error(lineno, 'error defining "%s": %s.' % (name, exc))
-        for k in vars.keys():
+        for k in list(vars.keys()):
             if k not in ('header_output', 'decoder_output',
                          'exec_output', 'decode_block'):
                 del vars[k]
@@ -1169,7 +1169,7 @@ class OperandList(object):
     # internal helper function for concat[Some]Attr{Strings|Lists}
     def __internalConcatAttrs(self, attr_name, filter, result):
         for op_desc in self.items:
-            if filter(op_desc):
+            if list(filter(op_desc)):
                 result += getattr(op_desc, attr_name)
         return result
 
@@ -1320,7 +1320,7 @@ class InstObjParams(object):
         self.base_class = base_class
         if not isinstance(snippets, dict):
             snippets = {'code' : snippets}
-        compositeCode = ' '.join(map(str, snippets.values()))
+        compositeCode = ' '.join(map(str, list(snippets.values())))
         self.snippets = snippets
 
         self.operands = OperandList(parser, compositeCode)
@@ -1815,10 +1815,10 @@ class ISAParser(Grammar):
     def p_specification(self, t):
         'specification : opt_defs_and_outputs top_level_decode_block'
 
-        for f in self.splits.iterkeys():
+        for f in self.splits.keys():
             f.write('\n#endif\n')
 
-        for f in self.files.itervalues(): # close ALL the files;
+        for f in self.files.values(): # close ALL the files;
             f.close() # not doing so can cause compilation to fail
 
         self.write_top_level_files()
@@ -1935,8 +1935,8 @@ del wrap
         # next split's #define from the parser and add it to the current
         # emission-in-progress.
         try:
-            exec split_setup+fixPythonIndentation(t[2]) in self.exportContext
-        except Exception, exc:
+            exec(split_setup+fixPythonIndentation(t[2]), self.exportContext)
+        except Exception as exc:
             if debug:
                 raise
             error(t.lineno(1), 'In global let block: %s' % exc)
@@ -1952,7 +1952,7 @@ del wrap
         'def_operand_types : DEF OPERAND_TYPES CODELIT SEMI'
         try:
             self.operandTypeMap = eval('{' + t[3] + '}')
-        except Exception, exc:
+        except Exception as exc:
             if debug:
                 raise
             error(t.lineno(1),
@@ -1967,7 +1967,7 @@ del wrap
                   'error: operand types must be defined before operands')
         try:
             user_dict = eval('{' + t[3] + '}', self.exportContext)
-        except Exception, exc:
+        except Exception as exc:
             if debug:
                 raise
             error(t.lineno(1), 'In def operands: %s' % exc)
@@ -2405,7 +2405,7 @@ StaticInstPtr
 
     def buildOperandNameMap(self, user_dict, lineno):
         operand_name = {}
-        for op_name, val in user_dict.iteritems():
+        for op_name, val in user_dict.items():
 
             # Check if extra attributes have been specified.
             if len(val) > 9:
@@ -2478,17 +2478,17 @@ StaticInstPtr
         self.operandNameMap = operand_name
 
         # Define operand variables.
-        operands = user_dict.keys()
+        operands = list(user_dict.keys())
         # Add the elems defined in the vector operands and
         # build a map elem -> vector (used in OperandList)
         elem_to_vec = {}
-        for op in user_dict.keys():
+        for op in list(user_dict.keys()):
             if hasattr(self.operandNameMap[op], 'elems'):
-                for elem in self.operandNameMap[op].elems.keys():
+                for elem in list(self.operandNameMap[op].elems.keys()):
                     operands.append(elem)
                     elem_to_vec[elem] = op
         self.elemToVector = elem_to_vec
-        extensions = self.operandTypeMap.keys()
+        extensions = list(self.operandTypeMap.keys())
 
         operandsREString = r'''
         (?<!\w)      # neg. lookbehind assertion: prevent partial matches
@@ -2607,7 +2607,7 @@ StaticInstPtr
     def parse_isa_desc(self, *args, **kwargs):
         try:
             self._parse_isa_desc(*args, **kwargs)
-        except ISAParserError, e:
+        except ISAParserError as e:
             print(backtrace(self.fileNameStack))
             print("At %s:" % e.lineno)
             print(e)

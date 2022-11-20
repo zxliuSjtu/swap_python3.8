@@ -33,7 +33,7 @@ import sys
 import threading
 import traceback
 
-import log
+from . import log
 
 pdb._Pdb = pdb.Pdb
 class ForkedPdb(pdb._Pdb):

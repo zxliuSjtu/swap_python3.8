@@ -40,8 +40,8 @@
 from abc import ABCMeta, abstractmethod
 import os
 from collections import namedtuple
-from units import *
-from results import TestResult
+from .units import *
+from .results import TestResult
 import shutil
 
 _test_base = os.path.join(os.path.dirname(__file__), "..")
@@ -173,7 +173,7 @@ def get_default_protocol(arch):
 all_categories = ("quick", "long")
 all_modes = ("fs", "se")
 
-class Test(object):
+class Test(object, metaclass=ABCMeta):
     """Test case base class.
 
     Test cases consists of one or more test units that are run in two
@@ -182,8 +182,6 @@ class Test(object):
     the run phase fails.
 
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, name):
         self.test_name = name

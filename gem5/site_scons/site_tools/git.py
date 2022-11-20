@@ -38,7 +38,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function
+
 import os
 
 import gem5_scons.util
@@ -54,7 +54,7 @@ def install_style_hooks(env):
     try:
         gitdir = env.Dir(readCommand(
             ["git", "rev-parse", "--git-dir"]).strip("\n"))
-    except Exception, e:
+    except Exception as e:
         print("Warning: Failed to find git repo directory: %s" % e)
         return
 
@@ -101,7 +101,7 @@ def install_style_hooks(env):
 
     print(git_style_message, end=' ')
     try:
-        raw_input()
+        input()
     except:
         print("Input exception, exiting scons.\n")
         sys.exit(1)

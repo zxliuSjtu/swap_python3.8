@@ -113,8 +113,8 @@ class oarsub:
     def build(self, script, args = []):
         self.cmd = [ self.oarsub ]
 
-        print "args:", args
-        print "script:", script
+        print("args:", args)
+        print("script:", script)
         if self.properties:
             self.cmd.append('-p"%s"' % self.properties )
 
@@ -134,7 +134,7 @@ class oarsub:
         #cmd = [ 'ssh', '-x', self.oarhost,  '"cd %s; %s"' % (os.getcwd(), self.command) ]
         self.command = ' '.join(self.cmd)
 
-        print "command: [%s]" % self.command
+        print("command: [%s]" % self.command)
 
     def do(self):
         oar = MyPOpen(self.cmd)
@@ -147,7 +147,7 @@ class oarsub:
 
         jobid = self.jobid.match(self.result)
         if jobid == None:
-            print "Couldn't get jobid from [%s]" % self.result
+            print("Couldn't get jobid from [%s]" % self.result)
             sys.exit(1)
         else:
             #self.outfile.write("%d %s\n" %(int(jobid.group(1)), self.name));
@@ -180,7 +180,7 @@ class qsub:
 
         if self.env:
             arg = '-v'
-            arg += ','.join([ '%s=%s' % i for i in self.env.iteritems() ])
+            arg += ','.join([ '%s=%s' % i for i in self.env.items() ])
             self.cmd.append(arg)
 
         if self.hold:

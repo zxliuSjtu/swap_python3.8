@@ -43,7 +43,7 @@
 #          Andreas Hansson
 #          Andreas Sandberg
 
-from __future__ import print_function
+
 
 import sys
 from types import FunctionType, MethodType, ModuleType
@@ -130,7 +130,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
     code('#include "params/%s.hh"' % name)
 
     if not is_header:
-        for param in simobj._params.values():
+        for param in list(simobj._params.values()):
             if isSimObjectClass(param.ptype):
                 code('#include "%s"' % param.ptype._value_dict['cxx_header'])
                 code('#include "params/%s.hh"' % param.ptype.__name__)
@@ -168,7 +168,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
         code('#include "base/str.hh"')
         code('#include "cxx_config/${name}.hh"')
 
-        if simobj._ports.values() != []:
+        if list(simobj._ports.values()) != []:
             code('#include "mem/mem_object.hh"')
             code('#include "mem/port.hh"')
 
@@ -180,7 +180,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
             return 'true' if b else 'false'
 
         code.indent()
-        for param in simobj._params.values():
+        for param in list(simobj._params.values()):
             is_vector = isinstance(param, m5.params.VectorParamDesc)
             is_simobj = issubclass(param.ptype, m5.SimObject.SimObject)
 
@@ -188,7 +188,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
                 (param.name, param.name, cxx_bool(is_vector),
                 cxx_bool(is_simobj)));
 
-        for port in simobj._ports.values():
+        for port in list(simobj._ports.values()):
             is_vector = isinstance(port, m5.params.VectorPort)
             is_master = port.role == 'MASTER'
 
@@ -209,7 +209,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
         code('bool ret = true;')
         code()
         code('if (false) {')
-        for param in simobj._params.values():
+        for param in list(simobj._params.values()):
             is_vector = isinstance(param, m5.params.VectorParamDesc)
             is_simobj = issubclass(param.ptype, m5.SimObject.SimObject)
 
@@ -240,7 +240,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
         code('bool ret = true;')
         code()
         code('if (false) {')
-        for param in simobj._params.values():
+        for param in list(simobj._params.values()):
             is_vector = isinstance(param, m5.params.VectorParamDesc)
             is_simobj = issubclass(param.ptype, m5.SimObject.SimObject)
 
@@ -294,7 +294,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
         code('bool ret = true;')
         code()
         code('if (false) {')
-        for param in simobj._params.values():
+        for param in list(simobj._params.values()):
             is_vector = isinstance(param, m5.params.VectorParamDesc)
             is_simobj = issubclass(param.ptype, m5.SimObject.SimObject)
 
@@ -324,7 +324,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
         code('bool ret = true;')
         code()
         code('if (false) {')
-        for param in simobj._params.values():
+        for param in list(simobj._params.values()):
             is_vector = isinstance(param, m5.params.VectorParamDesc)
             is_simobj = issubclass(param.ptype, m5.SimObject.SimObject)
 
@@ -364,7 +364,7 @@ def createCxxConfigDirectoryEntryFile(code, name, simobj, is_header):
         code()
         code('if (false)')
         code('    ;')
-        for port in simobj._ports.values():
+        for port in list(simobj._ports.values()):
             code('else if (name == "${{port.name}}")')
             code('    this->port_${{port.name}}_connection_count = count;')
         code('else')
@@ -429,7 +429,7 @@ class MetaSimObject(type):
         cls_dict = {}
         value_dict = {}
         cxx_exports = []
-        for key,val in dict.items():
+        for key,val in list(dict.items()):
             try:
                 cxx_exports.append(getattr(val, "__pybind"))
             except AttributeError:
@@ -483,8 +483,7 @@ class MetaSimObject(type):
             if isinstance(c, MetaSimObject):
                 bTotal += 1
             if bTotal > 1:
-                raise TypeError, \
-                      "SimObjects do not support multiple inheritance"
+                raise TypeError("SimObjects do not support multiple inheritance")
 
         base = bases[0]
 
@@ -524,7 +523,7 @@ class MetaSimObject(type):
         # the class is defined, so we handle them here.  The others
         # can be set later too, so just emulate that by calling
         # setattr().
-        for key,val in cls._value_dict.items():
+        for key,val in list(cls._value_dict.items()):
             # param descriptions
             if isinstance(val, ParamDesc):
                 cls._new_param(key, val)
@@ -534,7 +533,7 @@ class MetaSimObject(type):
                 cls._new_port(key, val)
 
             # init-time-only keywords
-            elif cls.init_keywords.has_key(key):
+            elif key in cls.init_keywords:
                 cls._set_keyword(key, val, cls.init_keywords[key])
 
             # default: use normal path (ends up in __setattr__)
@@ -543,8 +542,8 @@ class MetaSimObject(type):
 
     def _set_keyword(cls, keyword, val, kwtype):
         if not isinstance(val, kwtype):
-            raise TypeError, 'keyword %s has bad type %s (expecting %s)' % \
-                  (keyword, type(val), kwtype)
+            raise TypeError('keyword %s has bad type %s (expecting %s)' % \
+                  (keyword, type(val), kwtype))
         if isinstance(val, FunctionType):
             val = classmethod(val)
         type.__setattr__(cls, keyword, val)
@@ -562,7 +561,7 @@ class MetaSimObject(type):
         try:
             hr_value = value
             value = param.convert(value)
-        except Exception, e:
+        except Exception as e:
             msg = "%s\nError setting param %s.%s to %s\n" % \
                   (e, cls.__name__, name, value)
             e.args = (msg, )
@@ -613,19 +612,18 @@ class MetaSimObject(type):
             type.__setattr__(cls, attr, value)
             return
 
-        if cls.keywords.has_key(attr):
+        if attr in cls.keywords:
             cls._set_keyword(attr, value, cls.keywords[attr])
             return
 
-        if cls._ports.has_key(attr):
+        if attr in cls._ports:
             cls._cls_get_port_ref(attr).connect(value)
             return
 
         if isSimObjectOrSequence(value) and cls._instantiated:
-            raise RuntimeError, \
-                  "cannot set SimObject parameter '%s' after\n" \
+            raise RuntimeError("cannot set SimObject parameter '%s' after\n" \
                   "    class %s has been instantiated or subclassed" \
-                  % (attr, cls.__name__)
+                  % (attr, cls.__name__))
 
         # check for param
         param = cls._params.get(attr)
@@ -639,8 +637,7 @@ class MetaSimObject(type):
             return
 
         # no valid assignment... raise exception
-        raise AttributeError, \
-              "Class %s has no parameter \'%s\'" % (cls.__name__, attr)
+        raise AttributeError("Class %s has no parameter \'%s\'" % (cls.__name__, attr))
 
     def __getattr__(cls, attr):
         if attr == 'cxx_class_path':
@@ -652,14 +649,13 @@ class MetaSimObject(type):
         if attr == 'cxx_namespaces':
             return cls.cxx_class_path[:-1]
 
-        if cls._values.has_key(attr):
+        if attr in cls._values:
             return cls._values[attr]
 
-        if cls._children.has_key(attr):
+        if attr in cls._children:
             return cls._children[attr]
 
-        raise AttributeError, \
-              "object '%s' has no attribute '%s'" % (cls.__name__, attr)
+        raise AttributeError("object '%s' has no attribute '%s'" % (cls.__name__, attr))
 
     def __str__(cls):
         return cls.__name__
@@ -681,7 +677,7 @@ class MetaSimObject(type):
         # the object itself, not including inherited params (which
         # will also be inherited from the base class's param struct
         # here). Sort the params based on their key
-        params = map(lambda (k, v): v, sorted(cls._params.local.items()))
+        params = [k_v[1] for k_v in sorted(cls._params.local.items())]
         ports = cls._ports.local
 
         code('''#include "pybind11/pybind11.h"
@@ -726,7 +722,7 @@ module_init(py::module &m_internal)
             for k, v in sorted(cls._params.local.items())
         ] + [
             PyBindProperty("port_%s_connection_count" % port.name)
-            for port in ports.itervalues()
+            for port in ports.values()
         ]
         for exp in param_exports:
             exp.export(code, "%sParams" % cls)
@@ -777,7 +773,7 @@ module_init(py::module &m_internal)
         # the object itself, not including inherited params (which
         # will also be inherited from the base class's param struct
         # here). Sort the params based on their key
-        params = map(lambda (k, v): v, sorted(cls._params.local.items()))
+        params = [k_v1[1] for k_v1 in sorted(cls._params.local.items())]
         ports = cls._ports.local
         try:
             ptypes = [p.ptype for p in params]
@@ -813,7 +809,7 @@ module_init(py::module &m_internal)
 
         for param in params:
             param.cxx_predecls(code)
-        for port in ports.itervalues():
+        for port in ports.values():
             port.cxx_predecls(code)
         code()
 
@@ -846,7 +842,7 @@ module_init(py::module &m_internal)
 
         for param in params:
             param.cxx_decl(code)
-        for port in ports.itervalues():
+        for port in ports.values():
             port.cxx_decl(code)
 
         code.dedent()
@@ -875,7 +871,7 @@ def cxxMethod(*args, **kwargs):
     """Decorator to export C++ functions to Python"""
 
     def decorate(func):
-        name = func.func_name
+        name = func.__name__
         override = kwargs.get("override", False)
         cxx_name = kwargs.get("cxx_name", name)
 
@@ -886,7 +882,7 @@ def cxxMethod(*args, **kwargs):
 
         # Create tuples of (argument, default)
         if defaults:
-            args = args[:-len(defaults)] + zip(args[-len(defaults):], defaults)
+            args = args[:-len(defaults)] + list(zip(args[-len(defaults):], defaults))
         # Don't include self in the argument list to PyBind
         args = args[1:]
 
@@ -981,23 +977,22 @@ class SimObjectCliWrapper(object):
                 out.extend(self[t]._sim_objects)
         else:
             if isinstance(idx, int):
-                _range = range(idx, idx + 1)
+                _range = list(range(idx, idx + 1))
             elif not isinstance(idx, slice):
                 raise SimObjectCliWrapperException( \
                         'invalid index type: ' + repr(idx))
             for sim_object in self._sim_objects:
                 if isinstance(idx, slice):
-                    _range = range(*idx.indices(len(sim_object)))
+                    _range = list(range(*idx.indices(len(sim_object))))
                 out.extend(sim_object[i] for i in _range)
         return SimObjectCliWrapper(out)
 
 # The SimObject class is the root of the special hierarchy.  Most of
 # the code in this class deals with the configuration hierarchy itself
 # (parent/child node relationships).
-class SimObject(object):
+class SimObject(object, metaclass=MetaSimObject):
     # Specify metaclass.  Any class inheriting from SimObject will
     # get this metaclass.
-    __metaclass__ = MetaSimObject
     type = 'SimObject'
     abstract = True
 
@@ -1052,7 +1047,7 @@ class SimObject(object):
             # of the simobject hierarchy and save information about the
             # parameter to be used for generating and processing command line
             # options to the simulator to set these parameters.
-            for keys,values in self._params.items():
+            for keys,values in list(self._params.items()):
                 if values.isCmdLineSettable():
                     type_str = ''
                     ex_str = values.example_str()
@@ -1118,7 +1113,7 @@ class SimObject(object):
         # Do children before parameter values so that children that
         # are also param values get cloned properly.
         self._children = {}
-        for key,val in ancestor._children.iteritems():
+        for key,val in ancestor._children.items():
             self.add_child(key, val(_memo=memo_dict))
 
         # Inherit parameter values from class using multidict so
@@ -1127,7 +1122,7 @@ class SimObject(object):
         self._values = multidict(ancestor._values)
         self._hr_values = multidict(ancestor._hr_values)
         # clone SimObject-valued parameters
-        for key,val in ancestor._values.iteritems():
+        for key,val in ancestor._values.items():
             val = tryAsSimObjectOrVector(val)
             if val is not None:
                 self._values[key] = val(_memo=memo_dict)
@@ -1135,10 +1130,10 @@ class SimObject(object):
         # clone port references.  no need to use a multidict here
         # since we will be creating new references for all ports.
         self._port_refs = {}
-        for key,val in ancestor._port_refs.iteritems():
+        for key,val in ancestor._port_refs.items():
             self._port_refs[key] = val.clone(self, memo_dict)
         # apply attribute assignments from keyword args, if any
-        for key,val in kwargs.iteritems():
+        for key,val in kwargs.items():
             setattr(self, key, val)
 
     # "Clone" the current instance by creating another instance of
@@ -1152,13 +1147,13 @@ class SimObject(object):
             # no memo_dict: must be top-level clone operation.
             # this is only allowed at the root of a hierarchy
             if self._parent:
-                raise RuntimeError, "attempt to clone object %s " \
+                raise RuntimeError("attempt to clone object %s " \
                       "not at the root of a tree (parent = %s)" \
-                      % (self, self._parent)
+                      % (self, self._parent))
             # create a new dict and use that.
             memo_dict = {}
             kwargs['_memo'] = memo_dict
-        elif memo_dict.has_key(self):
+        elif self in memo_dict:
             # clone already done & memoized
             return memo_dict[self]
         return self.__class__(_ancestor = self, **kwargs)
@@ -1174,13 +1169,13 @@ class SimObject(object):
         return ref
 
     def __getattr__(self, attr):
-        if self._ports.has_key(attr):
+        if attr in self._ports:
             return self._get_port_ref(attr)
 
-        if self._values.has_key(attr):
+        if attr in self._values:
             return self._values[attr]
 
-        if self._children.has_key(attr):
+        if attr in self._children:
             return self._children[attr]
 
         # If the attribute exists on the C++ object, transparently
@@ -1196,7 +1191,7 @@ class SimObject(object):
             err_string += "\n  (C++ object is not yet constructed," \
                           " so wrapped C++ methods are unavailable.)"
 
-        raise AttributeError, err_string
+        raise AttributeError(err_string)
 
     # Set attribute (called on foo.attr = value when foo is an
     # instance of class cls).
@@ -1206,7 +1201,7 @@ class SimObject(object):
             object.__setattr__(self, attr, value)
             return
 
-        if self._ports.has_key(attr):
+        if attr in self._ports:
             # set up port connection
             self._get_port_ref(attr).connect(value)
             return
@@ -1216,7 +1211,7 @@ class SimObject(object):
             try:
                 hr_value = value
                 value = param.convert(value)
-            except Exception, e:
+            except Exception as e:
                 msg = "%s\nError setting param %s.%s to %s\n" % \
                       (e, self.__class__.__name__, attr, value)
                 e.args = (msg, )
@@ -1240,8 +1235,8 @@ class SimObject(object):
             return
 
         # no valid assignment... raise exception
-        raise AttributeError, "Class %s has no parameter %s" \
-              % (self.__class__.__name__, attr)
+        raise AttributeError("Class %s has no parameter %s" \
+              % (self.__class__.__name__, attr))
 
 
     # this hack allows tacking a '[0]' onto parameters that may or may
@@ -1249,7 +1244,7 @@ class SimObject(object):
     def __getitem__(self, key):
         if key == 0:
             return self
-        raise IndexError, "Non-zero index '%s' to SimObject" % key
+        raise IndexError("Non-zero index '%s' to SimObject" % key)
 
     # this hack allows us to iterate over a SimObject that may
     # not be a vector, so we can call a loop over it and get just one
@@ -1294,7 +1289,7 @@ class SimObject(object):
         if child.has_parent():
             warn("add_child('%s'): child '%s' already has parent", name,
                 child.get_name())
-        if self._children.has_key(name):
+        if name in self._children:
             # This code path had an undiscovered bug that would make it fail
             # at runtime. It had been here for a long time and was only
             # exposed by a buggy script. Changes here will probably not be
@@ -1310,7 +1305,7 @@ class SimObject(object):
     # that when we instantiate all the parameter objects we're still
     # inside the configuration hierarchy.
     def adoptOrphanParams(self):
-        for key,val in self._values.iteritems():
+        for key,val in self._values.items():
             if not isSimObjectVector(val) and isSimObjectSequence(val):
                 # need to convert raw SimObject sequences to
                 # SimObjectVector class so we can call has_parent()
@@ -1345,32 +1340,30 @@ class SimObject(object):
             return self, True
 
         found_obj = None
-        for child in self._children.itervalues():
+        for child in self._children.values():
             visited = False
             if hasattr(child, '_visited'):
               visited = getattr(child, '_visited')
 
             if isinstance(child, ptype) and not visited:
                 if found_obj != None and child != found_obj:
-                    raise AttributeError, \
-                          'parent.any matched more than one: %s %s' % \
-                          (found_obj.path, child.path)
+                    raise AttributeError('parent.any matched more than one: %s %s' % \
+                          (found_obj.path, child.path))
                 found_obj = child
         # search param space
-        for pname,pdesc in self._params.iteritems():
+        for pname,pdesc in self._params.items():
             if issubclass(pdesc.ptype, ptype):
                 match_obj = self._values[pname]
                 if found_obj != None and found_obj != match_obj:
-                    raise AttributeError, \
-                          'parent.any matched more than one: %s and %s' % \
-                          (found_obj.path, match_obj.path)
+                    raise AttributeError('parent.any matched more than one: %s and %s' % \
+                          (found_obj.path, match_obj.path))
                 found_obj = match_obj
         return found_obj, found_obj != None
 
     def find_all(self, ptype):
         all = {}
         # search children
-        for child in self._children.itervalues():
+        for child in self._children.values():
             # a child could be a list, so ensure we visit each item
             if isinstance(child, list):
                 children = child
@@ -1384,22 +1377,22 @@ class SimObject(object):
                 if isSimObject(child):
                     # also add results from the child itself
                     child_all, done = child.find_all(ptype)
-                    all.update(dict(zip(child_all, [done] * len(child_all))))
+                    all.update(dict(list(zip(child_all, [done] * len(child_all)))))
         # search param space
-        for pname,pdesc in self._params.iteritems():
+        for pname,pdesc in self._params.items():
             if issubclass(pdesc.ptype, ptype):
                 match_obj = self._values[pname]
                 if not isproxy(match_obj) and not isNullPointer(match_obj):
                     all[match_obj] = True
         # Also make sure to sort the keys based on the objects' path to
         # ensure that the order is the same on all hosts
-        return sorted(all.keys(), key = lambda o: o.path()), True
+        return sorted(list(all.keys()), key = lambda o: o.path()), True
 
     def unproxy(self, base):
         return self
 
     def unproxyParams(self):
-        for param in self._params.iterkeys():
+        for param in self._params.keys():
             value = self._values.get(param)
             if value != None and isproxy(value):
                 try:
@@ -1412,7 +1405,7 @@ class SimObject(object):
 
         # Unproxy ports in sorted order so that 'append' operations on
         # vector ports are done in a deterministic fashion.
-        port_names = self._ports.keys()
+        port_names = list(self._ports.keys())
         port_names.sort()
         for port_name in port_names:
             port = self._port_refs.get(port_name)
@@ -1427,7 +1420,7 @@ class SimObject(object):
         if hasattr(self, 'type'):
             print('type=%s' % self.type, file=ini_file)
 
-        if len(self._children.keys()):
+        if len(list(self._children.keys())):
             print('children=%s' %
                   ' '.join(self._children[n].get_name()
                            for n in sorted(self._children.keys())),
@@ -1489,7 +1482,7 @@ class SimObject(object):
         cc_params = cc_params_struct()
         cc_params.name = str(self)
 
-        param_names = self._params.keys()
+        param_names = list(self._params.keys())
         param_names.sort()
         for param in param_names:
             value = self._values.get(param)
@@ -1513,7 +1506,7 @@ class SimObject(object):
             else:
                 setattr(cc_params, param, value)
 
-        port_names = self._ports.keys()
+        port_names = list(self._ports.keys())
         port_names.sort()
         for port_name in port_names:
             port = self._port_refs.get(port_name, None)
@@ -1533,7 +1526,7 @@ class SimObject(object):
         if not self._ccObject:
             # Make sure this object is in the configuration hierarchy
             if not self._parent and not isRoot(self):
-                raise RuntimeError, "Attempt to instantiate orphan node"
+                raise RuntimeError("Attempt to instantiate orphan node")
             # Cycles in the configuration hierarchy are not supported. This
             # will catch the resulting recursion and stop.
             self._ccObject = -1
@@ -1541,8 +1534,8 @@ class SimObject(object):
                 params = self.getCCParams()
                 self._ccObject = params.create()
         elif self._ccObject == -1:
-            raise RuntimeError, "%s: Cycle found in configuration hierarchy." \
-                  % self.path()
+            raise RuntimeError("%s: Cycle found in configuration hierarchy." \
+                  % self.path())
         return self._ccObject
 
     def descendants(self):
@@ -1550,7 +1543,7 @@ class SimObject(object):
         # The order of the dict is implementation dependent, so sort
         # it based on the key (name) to ensure the order is the same
         # on all hosts
-        for (name, child) in sorted(self._children.iteritems()):
+        for (name, child) in sorted(self._children.items()):
             for obj in child.descendants():
                 yield obj
 
@@ -1567,7 +1560,7 @@ class SimObject(object):
     def connectPorts(self):
         # Sort the ports based on their attribute name to ensure the
         # order is the same on all hosts
-        for (attr, portRef) in sorted(self._port_refs.iteritems()):
+        for (attr, portRef) in sorted(self._port_refs.items()):
             portRef.ccConnect()
 
     # Default function for generating the device structure.
@@ -1577,7 +1570,7 @@ class SimObject(object):
         yield  # make this function a (null) generator
 
     def recurseDeviceTree(self, state):
-        for child in self._children.itervalues():
+        for child in self._children.values():
             for item in child: # For looping over SimObjectVectors
                 for dt in item.generateDeviceTree(state):
                     yield dt
@@ -1650,7 +1643,7 @@ def tryAsSimObjectOrVector(value):
 def coerceSimObjectOrVector(value):
     value = tryAsSimObjectOrVector(value)
     if value is None:
-        raise TypeError, "SimObject or SimObjectVector expected"
+        raise TypeError("SimObject or SimObjectVector expected")
     return value
 
 baseClasses = allClasses.copy()

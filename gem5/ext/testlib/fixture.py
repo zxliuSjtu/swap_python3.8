@@ -29,8 +29,8 @@
 import copy
 import traceback
 
-import helper
-import log
+from . import helper
+from . import log
 
 global_fixtures = []
 

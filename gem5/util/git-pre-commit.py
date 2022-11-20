@@ -68,7 +68,7 @@ staged_mismatch = set()
 
 for status, fname in git.status(filter="MA", cached=True):
     if args.verbose:
-        print "Checking %s..." % fname
+        print("Checking %s..." % fname)
     if check_ignores(fname):
         continue
     if status == "M":
@@ -95,22 +95,20 @@ for status, fname in git.status(filter="MA", cached=True):
 
 if failing_files:
     if len(failing_files) > len(staged_mismatch):
-        print >> sys.stderr
-        print >> sys.stderr, "Style checker failed for the following files:"
+        print(file=sys.stderr)
+        print("Style checker failed for the following files:", file=sys.stderr)
         for f in failing_files:
             if f not in staged_mismatch:
-                print >> sys.stderr, "\t%s" % f
-        print >> sys.stderr
-        print >> sys.stderr, \
-        "Please run the style checker manually to fix the offending files.\n" \
-        "To check your modifications, run: util/style.py -m"
+                print("\t%s" % f, file=sys.stderr)
+        print(file=sys.stderr)
+        print("Please run the style checker manually to fix the offending files.\n" \
+        "To check your modifications, run: util/style.py -m", file=sys.stderr)
 
-    print >> sys.stderr
+    print(file=sys.stderr)
     if staged_mismatch:
-        print >> sys.stderr, \
-        "It looks like you have forgotten to stage your fixes for commit in\n"\
-        "the following files: "
+        print("It looks like you have forgotten to stage your fixes for commit in\n"\
+        "the following files: ", file=sys.stderr)
         for f in staged_mismatch:
-            print >> sys.stderr, "\t%s" % f
-        print >> sys.stderr, "Please `git --add' them"
+            print("\t%s" % f, file=sys.stderr)
+        print("Please `git --add' them", file=sys.stderr)
     sys.exit(1)

@@ -28,7 +28,7 @@ def t_comment(t):
 
 def t_comment_body_part(t):
     r'(.|\n)*\*/'
-    print("comment body %s" % t)
+    print(("comment body %s" % t))
     t.lexer.begin('INITIAL')
 
 def t_error(t):

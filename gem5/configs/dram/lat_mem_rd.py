@@ -35,7 +35,7 @@
 #
 # Authors: Andreas Hansson
 
-from __future__ import print_function
+
 
 import gzip
 import optparse
@@ -188,7 +188,7 @@ def create_trace(filename, max_addr, burst_size, itt):
     protolib.encodeMessage(proto_out, header)
 
     # create a list of every single address to touch
-    addrs = range(0, max_addr, burst_size)
+    addrs = list(range(0, max_addr, burst_size))
 
     import random
     random.shuffle(addrs)
@@ -202,8 +202,8 @@ def create_trace(filename, max_addr, burst_size, itt):
     packet.size = int(burst_size)
 
     for addr in addrs:
-        packet.tick = long(tick)
-        packet.addr = long(addr)
+        packet.tick = int(tick)
+        packet.addr = int(addr)
         protolib.encodeMessage(proto_out, packet)
         tick = tick + itt
 
@@ -214,7 +214,7 @@ print("Generating traces, please wait...")
 
 nxt_range = 0
 nxt_state = 0
-period = long(itt * (max_range / burst_size))
+period = int(itt * (max_range / burst_size))
 
 # now we create the states for each range
 for r in ranges:

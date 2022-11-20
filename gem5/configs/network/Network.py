@@ -157,17 +157,17 @@ def init_network(options, network, InterfaceClass):
 
     if options.interswap == 1:
         assert(options.network == "garnet2.0")
-        print "setting interswap to: ", options.interswap
+        print("setting interswap to: ", options.interswap)
         network.interswap = options.interswap
 
     if options.interswap == 1:
         assert(options.network == "garnet2.0")
-        print "setting whenToSwap to: ", options.whenToSwap
+        print("setting whenToSwap to: ", options.whenToSwap)
         network.whenToSwap = options.whenToSwap
 
     if options.interswap == 1:
         assert(options.network == "garnet2.0")
-        print "setting whichToSwap to: ", options.whichToSwap
+        print("setting whichToSwap to: ", options.whichToSwap)
         network.whichToSwap = options.whichToSwap
 
     if options.policy:

@@ -33,7 +33,7 @@
 import m5
 from m5.objects import *
 from m5.util import convert, addToPath
-from fs_tools import *
+from .fs_tools import *
 import SimpleOpts
 #from caches import *
 #from caches_ruby import MSIRubyCacheSystem
@@ -118,42 +118,42 @@ class MyRubySystem(LinuxX86System):
             # For main run we start aith atomic to ROI and then switch
             self.cpu = [AtomicSimpleCPU(cpu_id = i, switched_out = False)
                         for i in range(self._opts.num_cpus)]
-            map(lambda c: c.createThreads(), self.cpu)
+            list(map(lambda c: c.createThreads(), self.cpu))
             self.mem_mode = "atomic_noncaching"
 
             self.timingCpu = [DerivO3CPU(cpu_id = i, switched_out = True)
                               for i in range(self._opts.num_cpus)]
-            map(lambda c: c.createThreads(), self.timingCpu)
+            list(map(lambda c: c.createThreads(), self.timingCpu))
 
             # Couldn't get Ruby to switch to SimpleAtomic after DerivO3
             self.cooldownCpu = [TimingSimpleCPU(cpu_id = i,switched_out = True)
                                 for i in range(self._opts.num_cpus)]
-            map(lambda c: c.createThreads(), self.cooldownCpu)
+            list(map(lambda c: c.createThreads(), self.cooldownCpu))
 
         else:
             # Note KVM needs a VM and atomic_noncaching
             self.cpu = [X86KvmCPU(cpu_id = i, hostFreq = "3.6GHz")
                         for i in range(self._opts.num_cpus)]
-            map(lambda c: c.createThreads(), self.cpu)
+            list(map(lambda c: c.createThreads(), self.cpu))
             self.kvm_vm = KvmVM()
             self.mem_mode = 'atomic_noncaching'
 
             self.atomicCpu = [AtomicSimpleCPU(cpu_id = i, switched_out = True)
                         for i in range(self._opts.num_cpus)]
-            map(lambda c: c.createThreads(), self.atomicCpu)
+            list(map(lambda c: c.createThreads(), self.atomicCpu))
 
             self.timingCpu = [TimingSimpleCPU(cpu_id = i, switched_out = True)
                               for i in range(self._opts.num_cpus)]
-            map(lambda c: c.createThreads(), self.timingCpu)
+            list(map(lambda c: c.createThreads(), self.timingCpu))
             #self.mem_mode = "timing"
 
     def switchCpus(self, old, new):
         assert(new[0].switchedOut())
-        m5.switchCpus(self, zip(old, new))
+        m5.switchCpus(self, list(zip(old, new)))
 
     def switchCpusSetMem(self, old, new, mem_mode):
         assert(new[0].switchedOut())
-        m5.switchCpusSetMem(self, zip(old, new), mem_mode)
+        m5.switchCpusSetMem(self, list(zip(old, new)), mem_mode)
 
     def setDiskImages(self, img_path_1, img_path_2):
         disk0 = CowDisk(img_path_1)

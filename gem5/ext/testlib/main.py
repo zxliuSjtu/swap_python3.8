@@ -29,16 +29,16 @@
 import os
 import itertools
 
-import config
-import fixture as fixture_mod
-import handlers
-import loader as loader_mod
-import log
-import query
-import result
-import runner
-import terminal
-import uid
+from . import config
+from . import fixture as fixture_mod
+from . import handlers
+from . import loader as loader_mod
+from . import log
+from . import query
+from . import result
+from . import runner
+from . import terminal
+from . import uid
 
 def entry_message():
     log.test_log.message("Running the new gem5 testing script.")

@@ -41,11 +41,11 @@
 # Configure the M5 cache hierarchy config in one place
 #
 
-from __future__ import print_function
+
 
 import m5
 from m5.objects import *
-from Caches import *
+from .Caches import *
 
 def config_cache(options, system):
     if options.external_memory_system and (options.caches or options.l2cache):
@@ -57,7 +57,7 @@ def config_cache(options, system):
 
     if options.cpu_type == "O3_ARM_v7a_3":
         try:
-            from cores.arm.O3_ARM_v7a import *
+            from .cores.arm.O3_ARM_v7a import *
         except:
             print("O3_ARM_v7a_3 is unavailable. Did you compile the O3 model?")
             sys.exit(1)
@@ -97,7 +97,7 @@ def config_cache(options, system):
     if options.memchecker:
         system.memchecker = MemChecker()
 
-    for i in xrange(options.num_cpus):
+    for i in range(options.num_cpus):
         if options.caches:
             icache = icache_class(size=options.l1i_size,
                                   assoc=options.l1i_assoc)

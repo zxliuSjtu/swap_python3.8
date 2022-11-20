@@ -34,8 +34,8 @@ from testlib.test import TestFunction
 from testlib.suite import TestSuite
 from testlib.helper import log_call
 from testlib.config import constants, config
-from fixture import TempdirFixture, Gem5Fixture, VariableFixture
-import verifier
+from .fixture import TempdirFixture, Gem5Fixture, VariableFixture
+from . import verifier
 
 def gem5_verify_config(name,
                        config,

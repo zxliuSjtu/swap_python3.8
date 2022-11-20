@@ -32,7 +32,7 @@ rout_ = 3
 
 for c in range(len(num_cores)):
 	for b in range(len(bench)):
-		print ("cores: {2:d} b: {0:s} vc-{1:d}".format(bench_caps[b], vc_, num_cores[c]))
+		print(("cores: {2:d} b: {0:s} vc-{1:d}".format(bench_caps[b], vc_, num_cores[c])))
 		pkt_lat = 0
 		injection_rate = 0.02
 		while(pkt_lat < 100.00):
@@ -51,14 +51,14 @@ for c in range(len(num_cores)):
 			# print packet_latency
 			pkt_lat = float(packet_latency)
 
-			print ("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate))
+			print(("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate)))
 			injection_rate+=0.02
 
 
 ############### Extract results here ###############
 for c in range(len(num_cores)):
 	for b in range(len(bench)):
-		print ("cores: {} benchmark: {} vc-{}".format(num_cores[c], bench_caps[b], vc_))
+		print(("cores: {} benchmark: {} vc-{}".format(num_cores[c], bench_caps[b], vc_)))
 		pkt_lat = 0
 		injection_rate = 0.02
 		while (pkt_lat < 200.00):
@@ -71,7 +71,7 @@ for c in range(len(num_cores)):
 
 				pkt_lat = float(packet_latency)
 
-				print ("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate))
+				print(("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate)))
 				injection_rate+=0.02
 
 			else:

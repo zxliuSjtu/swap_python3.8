@@ -38,7 +38,7 @@
 #
 # Authors: Kevin Lim
 
-from __future__ import print_function
+
 
 from m5.defines import buildEnv
 from m5.params import *

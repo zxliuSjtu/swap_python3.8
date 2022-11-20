@@ -41,12 +41,10 @@ from abc import *
 import os
 import subprocess
 
-from region import *
-from style import modified_regions
+from .region import *
+from .style import modified_regions
 
-class AbstractRepo(object):
-    __metaclass__ = ABCMeta
-
+class AbstractRepo(object, metaclass=ABCMeta):
     def file_path(self, fname):
         """Get the absolute path to a file relative within the repository. The
         input file name must be a valid path within the repository.

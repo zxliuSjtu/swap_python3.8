@@ -40,7 +40,7 @@
 # a generic ARM bigLITTLE system.
 
 
-from __future__ import print_function
+
 
 import argparse
 import os
@@ -162,7 +162,7 @@ def addOptions(parser):
                         help="Disks to instantiate")
     parser.add_argument("--bootscript", type=str, default=default_rcs,
                         help="Linux bootscript")
-    parser.add_argument("--cpu-type", type=str, choices=cpu_types.keys(),
+    parser.add_argument("--cpu-type", type=str, choices=list(cpu_types.keys()),
                         default="timing",
                         help="CPU simulation mode. Default: %(default)s")
     parser.add_argument("--kernel-init", type=str, default="/sbin/init",

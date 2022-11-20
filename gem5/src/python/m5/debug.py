@@ -26,7 +26,7 @@
 #
 # Authors: Nathan Binkert
 
-from __future__ import print_function
+
 
 from UserDict import DictMixin
 
@@ -67,7 +67,7 @@ class AllFlags(DictMixin):
             return
 
         self._dict.clear()
-        for name, flag in _m5.debug.allFlags().items():
+        for name, flag in list(_m5.debug.allFlags().items()):
             self._dict[name] = flag
         self._version = current_version
 
@@ -81,26 +81,26 @@ class AllFlags(DictMixin):
 
     def keys(self):
         self._update()
-        return self._dict.keys()
+        return list(self._dict.keys())
 
     def values(self):
         self._update()
-        return self._dict.values()
+        return list(self._dict.values())
 
     def items(self):
         self._update()
-        return self._dict.items()
+        return list(self._dict.items())
 
     def iterkeys(self):
         self._update()
-        return self._dict.iterkeys()
+        return iter(self._dict.keys())
 
     def itervalues(self):
         self._update()
-        return self._dict.itervalues()
+        return iter(self._dict.values())
 
     def iteritems(self):
         self._update()
-        return self._dict.iteritems()
+        return iter(self._dict.items())
 
 flags = AllFlags()

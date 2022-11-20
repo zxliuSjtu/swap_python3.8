@@ -35,8 +35,8 @@ import math
 import m5
 from m5.objects import *
 from m5.defines import buildEnv
-from Ruby import create_topology
-from Ruby import send_evicts
+from .Ruby import create_topology
+from .Ruby import send_evicts
 
 from topologies.Cluster import Cluster
 from topologies.Crossbar import Crossbar
@@ -70,7 +70,7 @@ class TccDirCache(RubyCache):
         self.size = MemorySize(options.tcc_size)
         self.size.value += (options.num_compute_units *
                             (MemorySize(options.tcp_size).value) *
-                            options.tcc_dir_factor) / long(options.num_tccs)
+                            options.tcc_dir_factor) / int(options.num_tccs)
         self.start_index_bit = math.log(options.cacheline_size, 2) + \
                                math.log(options.num_tccs, 2)
         self.replacement_policy = PseudoLRUReplacementPolicy()
@@ -276,8 +276,8 @@ class TCC(RubyCache):
         self.size = self.size / options.num_tccs
         self.dataArrayBanks = 256 / options.num_tccs #number of data banks
         self.tagArrayBanks = 256 / options.num_tccs #number of tag banks
-        if ((self.size.value / long(self.assoc)) < 128):
-            self.size.value = long(128 * self.assoc)
+        if ((self.size.value / int(self.assoc)) < 128):
+            self.size.value = int(128 * self.assoc)
         self.start_index_bit = math.log(options.cacheline_size, 2) + \
                                math.log(options.num_tccs, 2)
         self.replacement_policy = PseudoLRUReplacementPolicy()
@@ -467,7 +467,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
         block_size_bits = int(math.log(options.cacheline_size, 2))
         numa_bit = block_size_bits + dir_bits - 1
 
-    for i in xrange(options.num_dirs):
+    for i in range(options.num_dirs):
         dir_ranges = []
         for r in system.mem_ranges:
             addr_range = m5.objects.AddrRange(r.start, size = r.size(),
@@ -508,7 +508,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
 
     # For an odd number of CPUs, still create the right number of controllers
     cpuCluster = Cluster(extBW = 512, intBW = 512)  # 1 TB/s
-    for i in xrange((options.num_cpus + 1) / 2):
+    for i in range((options.num_cpus + 1) / 2):
 
         cp_cntrl = CPCntrl()
         cp_cntrl.create(options, ruby_system, system)
@@ -542,7 +542,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
 
     gpuCluster = Cluster(extBW = 512, intBW = 512)  # 1 TB/s
 
-    for i in xrange(options.num_compute_units):
+    for i in range(options.num_compute_units):
 
         tcp_cntrl = TCPCntrl(TCC_select_num_bits = TCC_bits,
                              number_of_TBEs = 2560) # max outstanding requests
@@ -575,7 +575,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
 
         gpuCluster.add(tcp_cntrl)
 
-    for i in xrange(options.num_sqc):
+    for i in range(options.num_sqc):
 
         sqc_cntrl = SQCCntrl(TCC_select_num_bits = TCC_bits)
         sqc_cntrl.create(options, ruby_system, system)
@@ -607,7 +607,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
         # SQC also in GPU cluster
         gpuCluster.add(sqc_cntrl)
 
-    for i in xrange(options.num_cp):
+    for i in range(options.num_cp):
 
         tcp_cntrl = TCPCntrl(TCC_select_num_bits = TCC_bits,
                              number_of_TBEs = 2560) # max outstanding requests
@@ -670,7 +670,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
         # SQC also in GPU cluster
         gpuCluster.add(sqc_cntrl)
 
-    for i in xrange(options.num_tccs):
+    for i in range(options.num_tccs):
 
         tcc_cntrl = TCCCntrl(TCC_select_num_bits = TCC_bits,
                              number_of_TBEs = options.num_compute_units * 2560)

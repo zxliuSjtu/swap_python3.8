@@ -193,7 +193,7 @@ class RealViewCtrl(BasicPioDevice):
     idreg = Param.UInt32(0x00000000, "ID Register, SYS_ID")
 
     def generateDeviceTree(self, state):
-        node = FdtNode("sysreg@%x" % long(self.pio_addr))
+        node = FdtNode("sysreg@%x" % int(self.pio_addr))
         node.appendCompatible("arm,vexpress-sysreg")
         node.append(FdtPropertyWords("reg",
             state.addrCells(self.pio_addr) +
@@ -228,7 +228,7 @@ class RealViewOsc(ClockDomain):
 
     def generateDeviceTree(self, state):
         phandle = state.phandle(self)
-        node = FdtNode("osc@" + format(long(phandle), 'x'))
+        node = FdtNode("osc@" + format(int(phandle), 'x'))
         node.appendCompatible("arm,vexpress-osc")
         node.append(FdtPropertyWords("arm,vexpress-sysreg,func",
                                      [0x1, int(self.device)]))
@@ -283,7 +283,7 @@ Express (V2M-P1) motherboard. See ARM DUI 0447J for details.
         node.appendCompatible("arm,vexpress,config-bus")
         node.append(FdtPropertyWords("arm,vexpress,site", [0]))
 
-        for obj in self._children.values():
+        for obj in list(self._children.values()):
             if issubclass(type(obj), SimObject):
                 node.append(obj.generateDeviceTree(state))
 
@@ -315,7 +315,7 @@ ARM DUI 0604E for details.
         node = FdtNode("dcc")
         node.appendCompatible("arm,vexpress,config-bus")
 
-        for obj in self._children.values():
+        for obj in list(self._children.values()):
             if isinstance(obj, SimObject):
                 node.append(obj.generateDeviceTree(state))
 

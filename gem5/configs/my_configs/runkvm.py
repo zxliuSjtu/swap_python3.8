@@ -100,7 +100,7 @@ if __name__ == "__m5_main__":
             print("User interrupt. Exiting")
             break
 
-        print("Exited because", exit_event.getCause())
+        print(("Exited because", exit_event.getCause()))
 
         if exit_event.getCause() == "work started count reach":
             start_tick = m5.curTick()
@@ -119,10 +119,10 @@ if __name__ == "__m5_main__":
     print("")
     print("Performance statistics")
 
-    print("Ran a total of", m5.curTick()/1e12, "simulated seconds")
-    print("Total wallclock time: %.2fs, %.2f min" % \
-                (time.time()-globalStart, (time.time()-globalStart)/60))
+    print(("Ran a total of", m5.curTick()/1e12, "simulated seconds"))
+    print(("Total wallclock time: %.2fs, %.2f min" % \
+                (time.time()-globalStart, (time.time()-globalStart)/60)))
 
     if foundROI:
-        print("Simulated time in ROI: %.2fs" % ((end_tick-start_tick)/1e12))
-print("Instructions executed in ROI: %d" % ((end_insts-start_insts)))
+        print(("Simulated time in ROI: %.2fs" % ((end_tick-start_tick)/1e12)))
+print(("Instructions executed in ROI: %d" % ((end_insts-start_insts))))

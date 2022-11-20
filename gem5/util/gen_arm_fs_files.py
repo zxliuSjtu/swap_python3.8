@@ -38,7 +38,7 @@ import sys
 import os
 
 def run_cmd(explanation, working_dir, cmd, stdout = None):
-    print "Running phase '%s'" % explanation
+    print("Running phase '%s'" % explanation)
     sys.stdout.flush()
 
     # some of the commands need $PWD to be properly set
@@ -51,7 +51,7 @@ def run_cmd(explanation, working_dir, cmd, stdout = None):
     if return_code == 0:
         return
 
-    print "Error running phase %s. Returncode: %d" % (explanation, return_code)
+    print("Error running phase %s. Returncode: %d" % (explanation, return_code))
     sys.exit(1)
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -78,31 +78,31 @@ parser.add_option("--make-jobs", type = "int", default = 1,
 (options, args) = parser.parse_args()
 
 if args:
-    print "Unrecognized argument(s) %s." % args
+    print("Unrecognized argument(s) %s." % args)
     sys.exit(1)
 
 if not os.path.isdir(options.dest_dir):
-    print "Error: %s is not a directory." % options.dest_dir
+    print("Error: %s is not a directory." % options.dest_dir)
     sys.exit(1)
 
 if not os.path.isdir(options.gem5_dir):
-    print "Error: %s is not a directory." % options.gem5_dir
+    print("Error: %s is not a directory." % options.gem5_dir)
     sys.exit(1)
 
 if machine() != "x86_64":
-    print "Error: This script should run in a x86_64 machine"
+    print("Error: This script should run in a x86_64 machine")
     sys.exit(1)
 
 binaries_dir = options.dest_dir + "/binaries"
 
 if os.path.exists(binaries_dir):
-    print "Error: %s already exists." % binaries_dir
+    print("Error: %s already exists." % binaries_dir)
     sys.exit(1)
 
 revisions_dir = options.dest_dir + "/revisions"
 
 if os.path.exists(revisions_dir):
-    print "Error: %s already exists." %revisions_dir
+    print("Error: %s already exists." %revisions_dir)
     sys.exit(1)
 
 # Some basic dependency checking
@@ -120,7 +120,7 @@ needed_programs = [
 
 for program in needed_programs:
     if not spawn.find_executable(program):
-        print "Error: command %s not found in $PATH" % program
+        print("Error: command %s not found in $PATH" % program)
         print ("If running on an Debian-based linux, please try the following "
                "cmd to get all the necessary packages: ")
         print ("sudo apt-get install -y make gcc bc gcc-aarch64-linux-gnu "
@@ -281,7 +281,7 @@ run_cmd("copy arm m5",
     m5_dir,
     ["cp", "m5", binaries_dir + "/m5.aarch32"])
 
-print "Done! All the generated files can be found in %s" % binaries_dir
+print("Done! All the generated files can be found in %s" % binaries_dir)
 
 sys.exit(0)
 

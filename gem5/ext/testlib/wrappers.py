@@ -32,9 +32,9 @@ loaded by the testlib :class:`testlib.loader.Loader`.
 '''
 import itertools
 
-import log
-import uid
-from state import Status, Result
+from . import log
+from . import uid
+from .state import Status, Result
 
 class TestCaseMetadata():
     def __init__(self, name, uid, path, result, status, suite_uid):

@@ -30,13 +30,13 @@ import multiprocessing.dummy
 import threading
 import traceback
 
-import helper
-import state
-import log
-import sandbox
+from . import helper
+from . import state
+from . import log
+from . import sandbox
 
-from state import Status, Result
-from fixture import SkipException
+from .state import Status, Result
+from .fixture import SkipException
 
 def compute_aggregate_result(iterable):
     '''

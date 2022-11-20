@@ -203,7 +203,7 @@ class Type(Symbol):
 #include "mem/ruby/slicc_interface/RubySlicc_Util.hh"
 ''')
 
-        for dm in self.data_members.values():
+        for dm in list(self.data_members.values()):
             if not dm.type.isPrimitive:
                 code('#include "mem/protocol/$0.hh"', dm.type.c_ident)
 
@@ -227,7 +227,7 @@ $klass ${{self.c_ident}}$parent
         code.indent()
         if not self.isGlobal:
             code.indent()
-            for dm in self.data_members.values():
+            for dm in list(self.data_members.values()):
                 ident = dm.ident
                 if "default" in dm:
                     # look for default value
@@ -252,7 +252,7 @@ $klass ${{self.c_ident}}$parent
             code('{')
             code.indent()
 
-            for dm in self.data_members.values():
+            for dm in list(self.data_members.values()):
                 code('m_${{dm.ident}} = other.m_${{dm.ident}};')
 
             code.dedent()
@@ -261,7 +261,7 @@ $klass ${{self.c_ident}}$parent
         # ******** Full init constructor ********
         if not self.isGlobal:
             params = [ 'const %s& local_%s' % (dm.type.c_ident, dm.ident) \
-                       for dm in self.data_members.itervalues() ]
+                       for dm in self.data_members.values() ]
             params = ', '.join(params)
 
             if self.isMessage:
@@ -278,7 +278,7 @@ $klass ${{self.c_ident}}$parent
 
             code('{')
             code.indent()
-            for dm in self.data_members.values():
+            for dm in list(self.data_members.values()):
                 code('m_${{dm.ident}} = local_${{dm.ident}};')
 
             code.dedent()
@@ -305,7 +305,7 @@ clone() const
         if not self.isGlobal:
             # const Get methods for each field
             code('// Const accessors methods for each field')
-            for dm in self.data_members.values():
+            for dm in list(self.data_members.values()):
                 code('''
 /** \\brief Const accessor method for ${{dm.ident}} field.
  *  \\return ${{dm.ident}} field
@@ -319,7 +319,7 @@ get${{dm.ident}}() const
 
             # Non-const Get methods for each field
             code('// Non const Accessors methods for each field')
-            for dm in self.data_members.values():
+            for dm in list(self.data_members.values()):
                 code('''
 /** \\brief Non-const accessor method for ${{dm.ident}} field.
  *  \\return ${{dm.ident}} field
@@ -333,7 +333,7 @@ get${{dm.ident}}()
 
             #Set methods for each field
             code('// Mutator methods for each field')
-            for dm in self.data_members.values():
+            for dm in list(self.data_members.values()):
                 code('''
 /** \\brief Mutator method for ${{dm.ident}} field */
 void
@@ -349,7 +349,7 @@ set${{dm.ident}}(const ${{dm.type.c_ident}}& local_${{dm.ident}})
         code.indent()
 
         # Data members for each field
-        for dm in self.data_members.values():
+        for dm in list(self.data_members.values()):
             if "abstract" not in dm:
                 const = ""
                 init = ""
@@ -420,7 +420,7 @@ ${{self.c_ident}}::print(ostream& out) const
 
         # For each field
         code.indent()
-        for dm in self.data_members.values():
+        for dm in list(self.data_members.values()):
             if dm.type.c_ident == "Addr":
                 code('''
 out << "${{dm.ident}} = " << printAddress(m_${{dm.ident}}) << " ";''')
@@ -477,7 +477,7 @@ enum ${{self.c_ident}} {
 
         code.indent()
         # For each field
-        for i,(ident,enum) in enumerate(self.enums.iteritems()):
+        for i,(ident,enum) in enumerate(self.enums.items()):
             desc = enum.get("desc", "No description avaliable")
             if i == 0:
                 init = ' = %s_FIRST' % self.c_ident
@@ -522,7 +522,7 @@ int ${{self.c_ident}}_base_number(const ${{self.c_ident}}& obj);
 int ${{self.c_ident}}_base_count(const ${{self.c_ident}}& obj);
 ''')
 
-            for enum in self.enums.itervalues():
+            for enum in self.enums.values():
                 code('''
 
 MachineID get${{enum.ident}}MachineID(NodeID RubyNode);
@@ -586,7 +586,7 @@ AccessPermission ${{self.c_ident}}_to_permission(const ${{self.c_ident}}& obj)
 ''')
 
         if self.isMachineType:
-            for enum in self.enums.itervalues():
+            for enum in self.enums.values():
                 if enum.primary:
                     code('#include "mem/protocol/${{enum.ident}}_Controller.hh"')
             code('#include "mem/ruby/common/MachineID.hh"')
@@ -610,7 +610,7 @@ ${{self.c_ident}}_to_string(const ${{self.c_ident}}& obj)
 
         # For each field
         code.indent()
-        for enum in self.enums.itervalues():
+        for enum in self.enums.values():
             code('  case ${{self.c_ident}}_${{enum.ident}}:')
             code('    return "${{enum.ident}}";')
         code.dedent()
@@ -631,7 +631,7 @@ string_to_${{self.c_ident}}(const string& str)
         # For each field
         start = ""
         code.indent()
-        for enum in self.enums.itervalues():
+        for enum in self.enums.values():
             code('${start}if (str == "${{enum.ident}}") {')
             code('    return ${{self.c_ident}}_${{enum.ident}};')
             start = "} else "
@@ -670,7 +670,7 @@ ${{self.c_ident}}_base_level(const ${{self.c_ident}}& obj)
 
             # For each field
             code.indent()
-            for i,enum in enumerate(self.enums.itervalues()):
+            for i,enum in enumerate(self.enums.values()):
                 code('  case ${{self.c_ident}}_${{enum.ident}}:')
                 code('    return $i;')
             code.dedent()
@@ -697,7 +697,7 @@ ${{self.c_ident}}_from_base_level(int type)
 
             # For each field
             code.indent()
-            for i,enum in enumerate(self.enums.itervalues()):
+            for i,enum in enumerate(self.enums.values()):
                 code('  case $i:')
                 code('    return ${{self.c_ident}}_${{enum.ident}};')
             code.dedent()
@@ -724,7 +724,7 @@ ${{self.c_ident}}_base_number(const ${{self.c_ident}}& obj)
             # For each field
             code.indent()
             code('  case ${{self.c_ident}}_NUM:')
-            for enum in reversed(self.enums.values()):
+            for enum in reversed(list(self.enums.values())):
                 # Check if there is a defined machine with this type
                 if enum.primary:
                     code('    base += ${{enum.ident}}_Controller::getNumControllers();')
@@ -753,7 +753,7 @@ ${{self.c_ident}}_base_count(const ${{self.c_ident}}& obj)
 ''')
 
             # For each field
-            for enum in self.enums.itervalues():
+            for enum in self.enums.values():
                 code('case ${{self.c_ident}}_${{enum.ident}}:')
                 if enum.primary:
                     code('return ${{enum.ident}}_Controller::getNumControllers();')
@@ -769,7 +769,7 @@ ${{self.c_ident}}_base_count(const ${{self.c_ident}}& obj)
 }
 ''')
 
-            for enum in self.enums.itervalues():
+            for enum in self.enums.values():
                 code('''
 
 MachineID

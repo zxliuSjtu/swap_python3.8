@@ -31,7 +31,7 @@
 from m5.params import *
 from m5.objects import *
 
-from BaseTopology import SimpleTopology
+from .BaseTopology import SimpleTopology
 
 # Creates a generic Mesh assuming an equal number of cache
 # and directory controllers.
@@ -78,7 +78,7 @@ class irregularMesh(SimpleTopology):
         # distributed across the network.
         network_nodes = []
         remainder_nodes = []
-        for node_index in xrange(len(nodes)):
+        for node_index in range(len(nodes)):
             if node_index < (len(nodes) - remainder):
                 network_nodes.append(nodes[node_index])
             else:
@@ -106,7 +106,7 @@ class irregularMesh(SimpleTopology):
 
         network.ext_links = ext_links
 
-        print(options.conf_file)
+        print((options.conf_file))
         # Do the file-handling stuff here...
         input_ = options.conf_file
         with open (input_, "r") as f:
@@ -114,7 +114,7 @@ class irregularMesh(SimpleTopology):
             data = data_.split(" ") # this create a 'list' of the original string comntained in variable 'data_'
             rows_ = int(data[0])
             cols_ = int(data[1])
-            print ("rows_: %d cols_: %d" % (rows_, cols_))
+            print(("rows_: %d cols_: %d" % (rows_, cols_)))
 
             next(f) # skip a line 'not necessary'
             # Now create a list and read all the file content
@@ -146,8 +146,8 @@ class irregularMesh(SimpleTopology):
 
 
         # East output to West input links (weight = 1)
-        for row in xrange(num_rows):
-            for col in xrange(num_columns):
+        for row in range(num_rows):
+            for col in range(num_columns):
                 if (col + 1 < num_columns):
                     if(topology[num_rows*row + col][num_rows*row + (col+1)] == 1):
                         east_out = col + (row * num_columns)
@@ -162,8 +162,8 @@ class irregularMesh(SimpleTopology):
                         link_count += 1
 
         # West output to East input links (weight = 1)
-        for row in xrange(num_rows):
-            for col in xrange(num_columns):
+        for row in range(num_rows):
+            for col in range(num_columns):
                 if (col + 1 < num_columns):
                     if(topology[num_rows*row + (col+1)][num_rows*row + col] == 1):
                         east_in = col + (row * num_columns)
@@ -178,8 +178,8 @@ class irregularMesh(SimpleTopology):
                         link_count += 1
 
         # North output to South input links (weight = 2)
-        for col in xrange(num_columns):
-            for row in xrange(num_rows):
+        for col in range(num_columns):
+            for row in range(num_rows):
                 if (row + 1 < num_rows):
                     if(topology[num_rows*row + col][num_rows*(row+1) + col] == 1):
                         north_out = col + (row * num_columns)
@@ -194,8 +194,8 @@ class irregularMesh(SimpleTopology):
                         link_count += 1
 
         # South output to North input links (weight = 2)
-        for col in xrange(num_columns):
-            for row in xrange(num_rows):
+        for col in range(num_columns):
+            for row in range(num_rows):
                 if (row + 1 < num_rows):
                     if(topology[num_rows*(row+1) + col][num_rows*row + col] == 1):
                         north_in = col + (row * num_columns)

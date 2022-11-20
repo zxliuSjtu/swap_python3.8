@@ -61,11 +61,11 @@ def verify(filename, regions=all_regions, verbose=False, verifiers=None,
         verifiers = style.verifiers.all_verifiers
 
     if verbose:
-        print "Verifying %s[%s]..." % (filename, regions)
+        print("Verifying %s[%s]..." % (filename, regions))
     for verifier in [ v(ui, opts, base=base) for v in verifiers ]:
         if verbose:
-            print "Applying %s (%s)" % (
-                verifier.test_name, verifier.__class__.__name__)
+            print("Applying %s (%s)" % (
+                verifier.test_name, verifier.__class__.__name__))
         if verifier.apply(filename, regions=regions):
             return False
     return True
@@ -73,11 +73,11 @@ def verify(filename, regions=all_regions, verbose=False, verifiers=None,
 def detect_repo():
     repo_classes = repo.detect_repo()
     if not repo_classes:
-        print >> sys.stderr, "Error: Failed to detect repository type, no " \
-            "known repository type found."
+        print("Error: Failed to detect repository type, no " \
+            "known repository type found.", file=sys.stderr)
         sys.exit(1)
     elif len(repo_classes) > 1:
-        print >> sys.stderr, "Error: Detected multiple repository types."
+        print("Error: Detected multiple repository types.", file=sys.stderr)
         sys.exit(1)
     else:
         return repo_classes[0]()

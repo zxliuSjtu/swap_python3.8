@@ -59,7 +59,7 @@ def run_test(root):
 
     # simulate until program terminates
     exit_event = m5.simulate(maxtick)
-    print 'Exiting @ tick', m5.curTick(), 'because', exit_event.getCause()
+    print('Exiting @ tick', m5.curTick(), 'because', exit_event.getCause())
 
 test_progs = os.environ.get('M5_TEST_PROGS', '/dist/m5/regression/test-progs')
 
@@ -85,7 +85,7 @@ args = parser.parse_args()
 executable = args.executable
 
 for config in args.config:
-    execfile(config)
+    exec(compile(open(config, "rb").read(), config, 'exec'))
 
 # Initialize all CPUs in a system
 def initCPUs(sys):

@@ -37,7 +37,7 @@
 #
 # Authors: Andreas Sandberg
 
-from __future__ import print_function
+
 
 from abc import ABCMeta, abstractmethod
 import inspect
@@ -93,7 +93,7 @@ class UnitResult(object):
     def state_name(self):
         return UnitResult.state_names[self.state]
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.success() or self.skipped()
 
     def __str__(self):
@@ -140,12 +140,10 @@ class TestResult(object):
     def runtime(self):
         return sum([ r.runtime for r in self.results ])
 
-    def __nonzero__(self):
+    def __bool__(self):
         return all([ r for r in self.results ])
 
-class ResultFormatter(object):
-    __metaclass__ = ABCMeta
-
+class ResultFormatter(object, metaclass=ABCMeta):
     def __init__(self, fout=sys.stdout, verbose=False):
         self.verbose = verbose
         self.fout = fout

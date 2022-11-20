@@ -26,8 +26,8 @@
 #
 # Authors: Sean Wilson
 
-import terminal
-import log
+from . import terminal
+from . import log
 
 # TODO Refactor print logic out of this so the objects
 # created are separate from print logic.
@@ -45,7 +45,7 @@ class QueryRunner(object):
         return [suite for suite in self.schedule]
 
     def suites_with_tag(self, tag):
-        return filter(lambda suite: tag in suite.tags, self.suites())
+        return [suite for suite in self.suites() if tag in suite.tags]
 
     def list_tests(self):
         log.test_log.message(terminal.separator())

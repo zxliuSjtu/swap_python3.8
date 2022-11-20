@@ -33,7 +33,7 @@ def t_NUMBER(t):
     try:
         t.value = int(t.value)
     except ValueError:
-        print("Integer value too large %s" % t.value)
+        print(("Integer value too large %s" % t.value))
         t.value = 0
     return t
 
@@ -44,7 +44,7 @@ def t_newline(t):
     t.lexer.lineno += t.value.count("\n")
     
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print(("Illegal character '%s'" % t.value[0]))
     t.lexer.skip(1)
     
 # Build the lexer
@@ -68,7 +68,7 @@ def p_statement_assign(t):
 
 def p_statement_expr(t):
     'statement : expression'
-    print(t[1])
+    print((t[1]))
 
 def p_expression_binop(t):
     '''expression : expression PLUS expression
@@ -98,12 +98,12 @@ def p_expression_name(t):
     try:
         t[0] = names[t[1]]
     except LookupError:
-        print("Undefined name '%s'" % t[1])
+        print(("Undefined name '%s'" % t[1]))
         t[0] = 0
 
 def p_error(t):
     if t:
-        print("Syntax error at '%s'" % t.value)
+        print(("Syntax error at '%s'" % t.value))
     else:
         print("Syntax error at EOF")
 
@@ -112,7 +112,7 @@ yacc.yacc(optimize=1)
 
 while 1:
     try:
-        s = raw_input('calc > ')
+        s = input('calc > ')
     except EOFError:
         break
     yacc.parse(s)

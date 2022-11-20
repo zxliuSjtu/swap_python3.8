@@ -24,7 +24,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function
+
 
 from bisect import bisect_left, bisect_right
 
@@ -89,7 +89,7 @@ class SortedDict(dict):
 
     def __repr__(self):
         return 'SortedDict({%s})' % ', '.join('%r: %r' % item
-                                              for item in self.iteritems())
+                                              for item in self.items())
     def __setitem__(self, key, item):
         dict.__setitem__(self, key, item)
         self._del_keys()
@@ -110,10 +110,10 @@ class SortedDict(dict):
         return self._keys[:]
 
     def values(self):
-        return list(self.itervalues())
+        return list(self.values())
 
     def items(self):
-        return list(self.iteritems())
+        return list(self.items())
 
     def iterkeys(self):
         return iter(self._keys)
@@ -184,12 +184,12 @@ class SortedDict(dict):
 if __name__ == '__main__':
     def display(d):
         print(d)
-        print(d.keys())
-        print(list(d.iterkeys()))
-        print(d.values())
-        print(list(d.itervalues()))
-        print(d.items())
-        print(list(d.iteritems()))
+        print(list(d.keys()))
+        print(list(d.keys()))
+        print(list(d.values()))
+        print(list(d.values()))
+        print(list(d.items()))
+        print(list(d.items()))
 
     d = SortedDict(x=24,e=5,j=4,b=2,z=26,d=4)
     display(d)
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     d['y'] = 26
     display(d)
 
-    print(`d`)
+    print(repr(d))
 
     print(d.copy())
 

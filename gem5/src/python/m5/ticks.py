@@ -26,7 +26,7 @@
 #
 # Authors: Nathan Binkert
 
-from __future__ import print_function
+
 
 import sys
 from m5.util import warn
@@ -49,31 +49,28 @@ def setGlobalFrequency(ticksPerSecond):
     global tps, tps_fixed
 
     if tps_fixed:
-        raise AttributeError, \
-              "Global frequency already fixed at %f ticks/s." % tps
+        raise AttributeError("Global frequency already fixed at %f ticks/s." % tps)
 
-    if isinstance(ticksPerSecond, (int, long)):
+    if isinstance(ticksPerSecond, int):
         tps = ticksPerSecond
     elif isinstance(ticksPerSecond, float):
         tps = ticksPerSecond
     elif isinstance(ticksPerSecond, str):
         tps = round(convert.anyToFrequency(ticksPerSecond))
     else:
-        raise TypeError, \
-              "wrong type '%s' for ticksPerSecond" % type(ticksPerSecond)
+        raise TypeError("wrong type '%s' for ticksPerSecond" % type(ticksPerSecond))
 
 # how big does a rounding error need to be before we warn about it?
 frequency_tolerance = 0.001  # 0.1%
 
 def fromSeconds(value):
     if not isinstance(value, float):
-        raise TypeError, "can't convert '%s' to type tick" % type(value)
+        raise TypeError("can't convert '%s' to type tick" % type(value))
 
     # once someone needs to convert to seconds, the global frequency
     # had better be fixed
     if not tps_fixed:
-        raise AttributeError, \
-              "In order to do conversions, the global frequency must be fixed"
+        raise AttributeError("In order to do conversions, the global frequency must be fixed")
 
     if value == 0:
         return 0

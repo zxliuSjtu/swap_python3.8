@@ -226,30 +226,30 @@ class DownloadedProgram(Fixture):
         self.url = self.urlbase + self.path
 
     def _download(self):
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         log.test_log.debug("Downloading " + self.url + " to " + self.path)
         if not os.path.exists(self.program_dir):
             os.makedirs(self.program_dir)
-        urllib.urlretrieve(self.url, self.path)
+        urllib.request.urlretrieve(self.url, self.path)
 
     def _getremotetime(self):
-        import  urllib2, datetime, time
+        import  urllib.request,  urllib.error,  urllib.parse, datetime, time
         import _strptime # Needed for python threading bug
 
-        u = urllib2.urlopen(self.url)
+        u = urllib.request.urlopen(self.url)
         return time.mktime(datetime.datetime.strptime( \
                     u.info().getheaders("Last-Modified")[0],
                     "%a, %d %b %Y %X GMT").timetuple())
 
     def setup(self, testitem):
-        import urllib2
+        import urllib.request, urllib.error, urllib.parse
         # Check to see if there is a file downloaded
         if not os.path.exists(self.path):
             self._download()
         else:
             try:
                 t = self._getremotetime()
-            except urllib2.URLError:
+            except urllib.error.URLError:
                 # Problem checking the server, use the old files.
                 log.debug("Could not contact server. Binaries may be old.")
                 return

@@ -59,7 +59,7 @@ def syncdir(srcdir, destdir):
             newdir = joinpath(destdir, root, entry)
             if not isdir(newdir):
                 os.mkdir(newdir)
-                print 'mkdir', newdir
+                print('mkdir', newdir)
 
         for i,d in enumerate(dirs):
             if islink(joinpath(srcdir, root, d)):
@@ -69,7 +69,7 @@ def syncdir(srcdir, destdir):
             dest = normpath(joinpath(destdir, root, entry))
             src = normpath(joinpath(srcdir, root, entry))
             if not isfile(dest) or not filecmp(src, dest):
-                print 'copy %s %s' % (dest, src)
+                print('copy %s %s' % (dest, src))
                 copy(src, dest)
 
 progpath = nfspath(sys.path[0])
@@ -128,7 +128,7 @@ for opt,arg in opts:
     if opt == '-f':
         force = True
     if opt == '-h':
-        print usage
+        print(usage)
         sys.exit(0)
     if opt == '-j':
         jfile = arg
@@ -158,7 +158,7 @@ conf = jobfile.JobFile(jfile)
 
 if update and not listonly and not onlyecho and isdir(conf.linkdir):
     if verbose:
-        print 'Checking for outdated files in Link directory'
+        print('Checking for outdated files in Link directory')
     if not isdir(conf.basedir):
         os.mkdir(conf.basedir)
     syncdir(conf.linkdir, conf.basedir)
@@ -191,7 +191,7 @@ if listonly:
             job.printinfo()
     else:
         for job in joblist:
-            print job.name
+            print(job.name)
     sys.exit(0)
 
 if not onlyecho:
@@ -265,8 +265,8 @@ for job in joblist:
         os.chdir(str(jobdir))
         os.environ['PWD'] = str(jobdir)
 
-    print 'Job name:       %s' % job.name
-    print 'Job directory:  %s' % jobdir
+    print('Job name:       %s' % job.name)
+    print('Job directory:  %s' % jobdir)
 
 
     qsub = batch.oarsub()
@@ -286,14 +286,14 @@ for job in joblist:
     qsub.build(script)
 
     if verbose:
-        print 'cwd:    %s' % qsub.command
-        print 'PBS Command:    %s' % qsub.command
+        print('cwd:    %s' % qsub.command)
+        print('PBS Command:    %s' % qsub.command)
 
     if not onlyecho:
         ec = qsub.do()
         if ec == 0:
             jobid = qsub.result
-            print 'OAR Jobid:      %s' % jobid
+            print('OAR Jobid:      %s' % jobid)
             #namehack.setname(jobid, job.name)
             queued = date()
             jobdir.echofile('.batch_jobid', jobid)
@@ -301,6 +301,6 @@ for job in joblist:
             jobdir.echofile('.queued', queued)
             jobdir.setstatus('queued on %s' % queued)
         else:
-            print 'OAR Failed'
-    print
-    print
+            print('OAR Failed')
+    print()
+    print()

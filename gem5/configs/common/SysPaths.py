@@ -35,7 +35,7 @@ class PathSearchFunc(object):
     _sys_paths = None
 
     def __init__(self, subdirs, sys_paths=None):
-        if isinstance(subdirs, basestring):
+        if isinstance(subdirs, str):
             subdirs = [subdirs]
         self._subdir = os.path.join(*subdirs)
         if sys_paths:
@@ -49,13 +49,13 @@ class PathSearchFunc(object):
                 paths = [ '/dist/m5/system', '/n/poolfs/z/dist/m5/system' ]
 
             # expand '~' and '~user' in paths
-            paths = map(os.path.expanduser, paths)
+            paths = list(map(os.path.expanduser, paths))
 
             # filter out non-existent directories
-            paths = filter(os.path.isdir, paths)
+            paths = list(filter(os.path.isdir, paths))
 
             if not paths:
-                raise IOError, "Can't find a path to system files."
+                raise IOError("Can't find a path to system files.")
 
             self._sys_paths = paths
 
@@ -64,7 +64,7 @@ class PathSearchFunc(object):
         try:
             return next(p for p in paths if os.path.exists(p))
         except StopIteration:
-            raise IOError, "Can't find file '%s' on path." % filename
+            raise IOError("Can't find file '%s' on path." % filename)
 
 disk = PathSearchFunc('disks')
 binary = PathSearchFunc('binaries')

@@ -822,7 +822,7 @@ class Fdt(object):
 
 def _add_json_to_fdtnode(node, subjson):
     """Populate FdtNode with JSON dict items"""
-    for (key, value) in subjson.items():
+    for (key, value) in list(subjson.items()):
         if isinstance(value, dict):
             subnode = FdtNode(key)
             subnode.set_parent_node(node)
@@ -875,7 +875,7 @@ def FdtFsParse(path):
     nodes = {path: root}
 
     for subpath, subdirs, files in os.walk(path):
-        if subpath not in nodes.keys():
+        if subpath not in list(nodes.keys()):
             raise Exception("os.walk error")
         cur = nodes[subpath]
         for f in files:
@@ -917,7 +917,7 @@ class FdtBlobParse(object):  # pylint: disable-msg=R0903
         header = Struct(self.__fdt_header_format)
         header_entry = Struct(">I")
         data = self.infile.read(header.size)
-        result = dict(zip(self.__fdt_header_names, header.unpack_from(data)))
+        result = dict(list(zip(self.__fdt_header_names, header.unpack_from(data))))
         if result['version'] >= 2:
             data = self.infile.read(header_entry.size)
             result['boot_cpuid_phys'] = header_entry.unpack_from(data)[0]
@@ -936,8 +936,8 @@ class FdtBlobParse(object):  # pylint: disable-msg=R0903
         self.infile.seek(self.fdt_header['off_mem_rsvmap'])
         while True:
             data = self.infile.read(header.size)
-            result = dict(zip(self.__fdt_reserve_entry_names,
-                              header.unpack_from(data)))
+            result = dict(list(zip(self.__fdt_reserve_entry_names,
+                              header.unpack_from(data))))
             if result['address'] == 0 and result['size'] == 0:
                 return entries
             entries.append(result)
@@ -1014,7 +1014,7 @@ class FdtBlobParse(object):  # pylint: disable-msg=R0903
                 propdata = self.__extract_fdt_prop()
                 tags.append((tag, propdata))
             else:
-                print("Unknown Tag %d" % tag)
+                print(("Unknown Tag %d" % tag))
         return tags
 
     def __init__(self, infile):

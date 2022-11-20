@@ -31,24 +31,24 @@ Handlers for the testlib Log.
 
 
 '''
-from __future__ import print_function
+
 
 import multiprocessing
 import os
-import Queue
+import queue
 import sys
 import threading
 import time
 import traceback
 
-import helper
-import log
-import result
-import state
-import test
-import terminal
+from . import helper
+from . import log
+from . import result
+from . import state
+from . import test
+from . import terminal
 
-from config import config, constants
+from .config import config, constants
 
 
 class _TestStreamManager(object):
@@ -72,7 +72,7 @@ class _TestStreamManager(object):
             writer.close()
 
     def close(self):
-        for writer in self._writers.values():
+        for writer in list(self._writers.values()):
             writer.close()
         self._writers.clear()
 
@@ -388,7 +388,7 @@ class MultiprocessingHandlerWrapper(log.Handler):
                 raise
             except EOFError:
                 return
-            except Queue.Empty:
+            except queue.Empty:
                 continue
 
     def _drain(self):
@@ -400,7 +400,7 @@ class MultiprocessingHandlerWrapper(log.Handler):
                 raise
             except EOFError:
                 return
-            except Queue.Empty:
+            except queue.Empty:
                 return
 
     def _handle(self, record):

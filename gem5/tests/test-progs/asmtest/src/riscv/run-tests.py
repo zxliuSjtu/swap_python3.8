@@ -51,8 +51,8 @@ from clusterjob import *
 def execute(cmd):
   try:
     return subprocess.check_output(cmd, shell=True)
-  except subprocess.CalledProcessError, err:
-    print "ERROR: " + err.output
+  except subprocess.CalledProcessError as err:
+    print("ERROR: " + err.output)
 
 #-------------------------------------------------------------------------
 # Input options
@@ -125,7 +125,7 @@ job_pool.close()
 # process job outputs
 file = open(test_summary_out, "w")
 
-job_outputs = zip(job_names, job_outputs)
+job_outputs = list(zip(job_names, job_outputs))
 for entry in job_outputs:
   # a negative return value indicates that the job was terminated
   # by a signal

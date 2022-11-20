@@ -29,7 +29,7 @@
 from m5.params import *
 from m5.objects import *
 
-from BaseTopology import SimpleTopology
+from .BaseTopology import SimpleTopology
 
 class Crossbar(SimpleTopology):
     description='Crossbar'

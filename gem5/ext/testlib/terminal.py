@@ -63,7 +63,7 @@ capability_map = {
        'Normal': 'sgr0'
 }
 
-capability_names = capability_map.keys()
+capability_names = list(capability_map.keys())
 
 def null_cap_string(s, *args):
     return ''
@@ -84,7 +84,7 @@ class ColorStrings(object):
     def __init__(self, cap_string):
         for i, c in enumerate(color_names):
             setattr(self, c, cap_string('setaf', i))
-        for name, cap in capability_map.iteritems():
+        for name, cap in capability_map.items():
             setattr(self, name, cap_string(cap))
 
 termcap = ColorStrings(cap_string)
@@ -149,17 +149,17 @@ if __name__ == '__main__':
     def test_termcap(obj):
         for c_name in color_names:
             c_str = getattr(obj, c_name)
-            print c_str + c_name + obj.Normal
+            print(c_str + c_name + obj.Normal)
             for attr_name in capability_names:
                 if attr_name == 'Normal':
                     continue
                 attr_str = getattr(obj, attr_name)
-                print attr_str + c_str + attr_name + " " + c_name + obj.Normal
-            print obj.Bold + obj.Underline + \
-                  c_name + "Bold Underline " + c_str + obj.Normal
+                print(attr_str + c_str + attr_name + " " + c_name + obj.Normal)
+            print(obj.Bold + obj.Underline + \
+                  c_name + "Bold Underline " + c_str + obj.Normal)
 
-    print "=== termcap enabled ==="
+    print("=== termcap enabled ===")
     test_termcap(termcap)
-    print termcap.Normal
-    print "=== termcap disabled ==="
+    print(termcap.Normal)
+    print("=== termcap disabled ===")
     test_termcap(no_termcap)

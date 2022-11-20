@@ -39,10 +39,10 @@
 #
 # Authors: Kevin Lim
 
-from __future__ import print_function
+
 
 from m5.objects import *
-from Benchmarks import *
+from .Benchmarks import *
 from m5.util import *
 from common import PlatformConfig
 
@@ -281,11 +281,11 @@ def makeArmSystem(mem_mode, machine_type, num_cpus=1, mdesc=None,
         pci_devices.append(self.pci_ide)
 
     self.mem_ranges = []
-    size_remain = long(Addr(mdesc.mem()))
+    size_remain = int(Addr(mdesc.mem()))
     for region in self.realview._mem_regions:
-        if size_remain > long(region[1]):
+        if size_remain > int(region[1]):
             self.mem_ranges.append(AddrRange(region[0], size=region[1]))
-            size_remain = size_remain - long(region[1])
+            size_remain = size_remain - int(region[1])
         else:
             self.mem_ranges.append(AddrRange(region[0], size=size_remain))
             size_remain = 0
@@ -568,7 +568,7 @@ def makeX86System(mem_mode, numCPUs=1, mdesc=None, self=None, Ruby=False):
     # Set up the Intel MP table
     base_entries = []
     ext_entries = []
-    for i in xrange(numCPUs):
+    for i in range(numCPUs):
         bp = X86IntelMPProcessor(
                 local_apic_id = i,
                 local_apic_version = 0x14,
@@ -636,7 +636,7 @@ def makeLinuxX86System(mem_mode, numCPUs=1, mdesc=None, Ruby=False,
 
     # We assume below that there's at least 1MB of memory. We'll require 2
     # just to avoid corner cases.
-    phys_mem_size = sum(map(lambda r: r.size(), self.mem_ranges))
+    phys_mem_size = sum([r.size() for r in self.mem_ranges])
     assert(phys_mem_size >= 0x200000)
     assert(len(self.mem_ranges) <= 2)
 

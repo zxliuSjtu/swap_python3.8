@@ -26,8 +26,8 @@
 #
 # Authors: Sean Wilson
 
-import suite
-import fixture
+from . import suite
+from . import fixture
 
-from suite import *
-from fixture import *
+from .suite import *
+from .fixture import *

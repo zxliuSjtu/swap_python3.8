@@ -33,7 +33,7 @@
 #  Author: Brad Beckmann
 #
 
-from __future__ import print_function
+
 
 executable = binpath('gpu-hello')
 kernel_path = os.path.dirname(executable)

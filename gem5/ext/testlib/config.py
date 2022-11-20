@@ -71,10 +71,10 @@ import copy
 import os
 import re
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 from pickle import HIGHEST_PROTOCOL as highest_pickle_protocol
 
-from helper import absdirpath, AttrDict, FrozenAttrDict
+from .helper import absdirpath, AttrDict, FrozenAttrDict
 
 class UninitialzedAttributeException(Exception):
     '''
@@ -152,7 +152,7 @@ class _Config(object):
         self._config.update(self._config_file_args)
 
     def _run_post_processors(self):
-        for attr, callbacks in self._post_processors.items():
+        for attr, callbacks in list(self._post_processors.items()):
             newval = self._lookup_val(attr)
             for callback in callbacks:
                 newval = callback(newval)
@@ -191,7 +191,7 @@ class _Config(object):
     def get_tags(self):
         d = {typ: set(self.__getattr__(typ))
             for typ in self.constants.supported_tags}
-        if any(map(lambda vals: bool(vals), d.values())):
+        if any([bool(vals) for vals in list(d.values())]):
             return d
         else:
             return {}
@@ -533,9 +533,7 @@ def define_common_args(config):
     common_args = AttrDict({arg.name:arg for arg in common_args})
 
 
-class ArgParser(object):
-    __metaclass__ = abc.ABCMeta
-
+class ArgParser(object, metaclass=abc.ABCMeta):
     def __init__(self, parser):
         # Copy public methods of the parser.
         for attr in dir(parser):

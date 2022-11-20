@@ -38,7 +38,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function
+
 from gem5_python_paths import extra_python_paths
 
 # Check for recent-enough Python and SCons versions.
@@ -49,7 +49,7 @@ try:
     # 0.98, and the second will fail for 0.98.0
     EnsureSConsVersion(0, 98)
     EnsureSConsVersion(0, 98, 1)
-except SystemExit, e:
+except SystemExit as e:
     print("""
 For more details, see:
     http://gem5.org/Dependencies
@@ -59,7 +59,7 @@ For more details, see:
 # pybind11 requires python 2.7
 try:
     EnsurePythonVersion(2, 7)
-except SystemExit, e:
+except SystemExit as e:
     print ("""
 You can use a non-default installation of the Python interpreter by
 rearranging your PATH so that scons finds the non-default 'python' and

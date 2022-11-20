@@ -34,7 +34,7 @@ from .suite import *
 from .loader import *
 from .fixture import *
 from .config import *
-from main import main
+from .main import main
 
 #TODO Remove this awkward bootstrap
 #FIXME

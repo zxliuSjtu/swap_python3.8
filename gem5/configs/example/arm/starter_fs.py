@@ -43,7 +43,7 @@ Research Starter Kit on System Modeling. More information can be found
 at: http://www.arm.com/ResearchEnablement/SystemModeling
 """
 
-from __future__ import print_function
+
 
 import os
 import m5
@@ -206,7 +206,7 @@ def main():
                         help="Disk to instantiate")
     parser.add_argument("--script", type=str, default="",
                         help = "Linux bootscript")
-    parser.add_argument("--cpu", type=str, choices=cpu_types.keys(),
+    parser.add_argument("--cpu", type=str, choices=list(cpu_types.keys()),
                         default="atomic",
                         help="CPU model to use")
     parser.add_argument("--cpu-freq", type=str, default="4GHz")

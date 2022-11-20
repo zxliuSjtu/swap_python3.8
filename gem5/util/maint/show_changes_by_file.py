@@ -100,15 +100,15 @@ def _main():
 
     odd = diff_files(args.upstream, args.feature, paths=args.paths)
 
-    for key, value in odd.iteritems():
-        print key
+    for key, value in odd.items():
+        print(key)
         for entry in value:
-            print "    %s" % entry
+            print("    %s" % entry)
             path = key + entry
             sha = cl_hash(args.upstream, args.feature, path)
             for s in sha:
-                print "\t%s" % s
-        print
+                print("\t%s" % s)
+        print()
 
 if __name__ == "__main__":
     _main()

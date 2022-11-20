@@ -38,7 +38,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function
+
 import re
 import sys
 
@@ -98,7 +98,7 @@ def install_style_hooks(env):
         print(mercurial_style_upgrade_message)
         # continue unless user does ctrl-c/ctrl-d etc.
         try:
-            raw_input()
+            input()
         except:
             print("Input exception, exiting scons.\n")
             sys.exit(1)
@@ -126,7 +126,7 @@ def install_style_hooks(env):
         print(mercurial_style_message, end=' ')
         # continue unless user does ctrl-c/ctrl-d etc.
         try:
-            raw_input()
+            input()
         except:
             print("Input exception, exiting scons.\n")
             sys.exit(1)

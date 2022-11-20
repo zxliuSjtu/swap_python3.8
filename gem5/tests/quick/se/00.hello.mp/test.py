@@ -34,7 +34,7 @@ benchmarks = [
     "tests/test-progs/hello/bin/alpha/linux/hello", "'hello'",
     ]
 
-for i, cpu in zip(range(len(cpus)), root.system.cpu):
+for i, cpu in zip(list(range(len(cpus))), root.system.cpu):
     p            = Process()
     p.executable = benchmarks[i*2]
     p.cmd        = benchmarks[(i*2)+1]

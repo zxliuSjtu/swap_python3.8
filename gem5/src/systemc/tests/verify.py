@@ -27,7 +27,7 @@
 #
 # Authors: Gabe Black
 
-from __future__ import print_function
+
 
 import argparse
 import collections
@@ -65,7 +65,7 @@ class Test(object):
         self.build_dir = build_dir
         self.props = {}
 
-        for key, val in props.iteritems():
+        for key, val in props.items():
             self.set_prop(key, val)
 
     def set_prop(self, key, val):
@@ -107,8 +107,7 @@ class TestPhaseMeta(type):
 
         super(TestPhaseMeta, cls).__init__(name, bases, d)
 
-class TestPhaseBase(object):
-    __metaclass__ = TestPhaseMeta
+class TestPhaseBase(object, metaclass=TestPhaseMeta):
     abstract = True
 
     def __init__(self, main_args, *args):
@@ -172,7 +171,7 @@ class RunPhase(TestPhaseBase):
                 os.makedirs(test.m5out_dir())
             try:
                 subprocess.check_call(cmd)
-            except subprocess.CalledProcessError, error:
+            except subprocess.CalledProcessError as error:
                 returncode = error.returncode
             else:
                 returncode = 0
@@ -182,12 +181,12 @@ class RunPhase(TestPhaseBase):
 
         j = self.main_args.j if args.j == 0 else args.j
 
-        runnable = filter(lambda t: not t.compile_only, tests)
+        runnable = [t for t in tests if not t.compile_only]
         if j == 1:
-            map(run_test, runnable)
+            list(map(run_test, runnable))
         else:
             tp = multiprocessing.pool.ThreadPool(j)
-            map(lambda t: tp.apply_async(run_test, (t,)), runnable)
+            list(map(lambda t: tp.apply_async(run_test, (t,)), runnable))
             tp.close()
             tp.join()
 
@@ -240,7 +239,7 @@ class DiffingChecker(Checker):
 
 class LogChecker(DiffingChecker):
     def merge_filts(*filts):
-        filts = map(lambda f: '(' + f + ')', filts)
+        filts = ['(' + f + ')' for f in filts]
         filts = '|'.join(filts)
         return re.compile(filts, flags=re.MULTILINE)
 
@@ -298,9 +297,9 @@ class GoldenDir(object):
 
         contents = os.listdir(path)
         suffix = '.' + platform
-        suffixed = filter(lambda c: c.endswith(suffix), contents)
-        bases = map(lambda t: t[:-len(platform)], suffixed)
-        common = filter(lambda t: not t.startswith(tuple(bases)), contents)
+        suffixed = [c for c in contents if c.endswith(suffix)]
+        bases = [t[:-len(platform)] for t in suffixed]
+        common = [t for t in contents if not t.startswith(tuple(bases))]
 
         self.entries = {}
         class Entry(object):
@@ -317,9 +316,9 @@ class GoldenDir(object):
     def entry(self, name):
         def match(n):
             return (n == name) or n.startswith(name + '.')
-        matches = { n: e for n, e in self.entries.items() if match(n) }
+        matches = { n: e for n, e in list(self.entries.items()) if match(n) }
 
-        for match in matches.values():
+        for match in list(matches.values()):
             match.use()
 
         platform_name = '.'.join([ name, self.platform ])
@@ -331,8 +330,8 @@ class GoldenDir(object):
             return None
 
     def unused(self):
-        items = self.entries.items()
-        items = filter(lambda i: not i[1].used, items)
+        items = list(self.entries.items())
+        items = [i for i in items if not i[1].used]
 
         items.sort()
         sources = []
@@ -362,17 +361,17 @@ class VerifyPhase(TestPhaseBase):
 
     def print_status(self):
         total_passed = len(self._passed)
-        total_failed = sum(map(len, self._failed.values()))
+        total_failed = sum(map(len, list(self._failed.values())))
         print()
         print('Passed: {passed:4} - Failed: {failed:4}'.format(
                   passed=total_passed, failed=total_failed))
 
     def write_result_file(self, path):
         results = {
-            'passed': map(lambda t: t.props, self._passed),
+            'passed': [t.props for t in self._passed],
             'failed': {
-                cause: map(lambda t: t.props, tests) for
-                       cause, tests in self._failed.iteritems()
+                cause: [t.props for t in tests] for
+                       cause, tests in self._failed.items()
             }
         }
         with open(path, 'w') as rf:
@@ -412,8 +411,8 @@ class VerifyPhase(TestPhaseBase):
 
         self.reset_status()
 
-        runnable = filter(lambda t: not t.compile_only, tests)
-        compile_only = filter(lambda t: t.compile_only, tests)
+        runnable = [t for t in tests if not t.compile_only]
+        compile_only = [t for t in tests if t.compile_only]
 
         for test in compile_only:
             if os.path.exists(test.full_path()):
@@ -474,9 +473,9 @@ class VerifyPhase(TestPhaseBase):
                 self.failed(test, 'missing output', ' '.join(missing))
                 continue
 
-            failed_diffs = filter(lambda d: not d.check(), diffs)
+            failed_diffs = [d for d in diffs if not d.check()]
             if failed_diffs:
-                tags = map(lambda d: d.tag, failed_diffs)
+                tags = [d.tag for d in failed_diffs]
                 self.failed(test, 'failed diffs', ' '.join(tags))
                 continue
 
@@ -566,7 +565,7 @@ with open(json_path) as f:
 
     filtered_tests = {
         target: props for (target, props) in
-                    test_data.iteritems() if eval(filt, dict(props))
+                    test_data.items() if eval(filt, dict(props))
     }
 
     if len(filtered_tests) == 0:
@@ -574,15 +573,15 @@ with open(json_path) as f:
         exit()
 
     if main_args.list:
-        for target, props in sorted(filtered_tests.iteritems()):
+        for target, props in sorted(filtered_tests.items()):
             print('%s.%s' % (target, main_args.flavor))
-            for key, val in props.iteritems():
+            for key, val in props.items():
                 print('    %s: %s' % (key, val))
         print('Total tests: %d' % len(filtered_tests))
     else:
         tests_to_run = list([
             Test(target, main_args.flavor, main_args.build_dir, props) for
-                target, props in sorted(filtered_tests.iteritems())
+                target, props in sorted(filtered_tests.items())
         ])
 
         for phase in phases:

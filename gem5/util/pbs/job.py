@@ -99,10 +99,10 @@ class JobDir(object):
         filename = self.file(filename)
         try:
             f = file(filename, 'w')
-            print >>f, string
+            print(string, file=f)
             f.flush()
             f.close()
-        except IOError,e:
+        except IOError as e:
             sys.exit(e)
 
     def rmfile(self, filename):
@@ -121,17 +121,17 @@ class JobDir(object):
         filename = self.file('.status')
         try:
             f = file(filename, 'a')
-            print >>f, string
+            print(string, file=f)
             f.flush()
             f.close()
-        except IOError,e:
+        except IOError as e:
             sys.exit(e)
 
     def getstatus(self):
         filename = self.file('.status')
         try:
             f = file(filename, 'r')
-        except IOError, e:
+        except IOError as e:
             return 'none'
 
         # fast forward to the end
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     workdir = joinpath(workbase, '%s.%s' % (env['USER'], pbs_jobid))
     host = socket.gethostname()
 
-    os.umask(0022)
+    os.umask(0o022)
 
     jobdir = JobDir(outdir)
 
@@ -185,7 +185,7 @@ if __name__ == '__main__':
 
     try:
         os.chdir(workdir)
-    except OSError,e:
+    except OSError as e:
         sys.exit(e)
 
     os.symlink(jobdir.file('output'), 'status.out')
@@ -194,9 +194,9 @@ if __name__ == '__main__':
     if not len(args):
         sys.exit("no arguments")
 
-    print 'starting job... %s' % started
-    print ' '.join(args)
-    print
+    print('starting job... %s' % started)
+    print(' '.join(args))
+    print()
     sys.stdout.flush()
 
     childpid = os.fork()
@@ -226,7 +226,7 @@ if __name__ == '__main__':
         try:
             thepid,ec = os.waitpid(childpid, 0)
             if ec:
-                print 'Exit code ', ec
+                print('Exit code ', ec)
                 status = 'failure'
             else:
                 status = 'success'
@@ -235,7 +235,7 @@ if __name__ == '__main__':
             pass
 
     complete = date()
-    print '\njob complete... %s' % complete
+    print('\njob complete... %s' % complete)
     jobdir.echofile('.%s' % status, complete)
     jobdir.rmfile('.running')
     jobdir.setstatus('%s on %s' % (status, complete))

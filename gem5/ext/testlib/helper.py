@@ -34,7 +34,7 @@ from collections import MutableSet, OrderedDict
 import difflib
 import errno
 import os
-import Queue
+import queue
 import re
 import shutil
 import stat
@@ -139,12 +139,12 @@ def _make_key(args, kwds, typed,
     key = args
     if kwds:
         key += kwd_mark
-        for item in kwds.items():
+        for item in list(kwds.items()):
             key += item
     if typed:
         key += tuple(type(v) for v in args)
         if kwds:
-            key += tuple(type(v) for v in kwds.values())
+            key += tuple(type(v) for v in list(kwds.values()))
     elif len(key) == 1 and type(key[0]) in fasttypes:
         return key[0]
     return _HashedSeq(key)
@@ -356,7 +356,7 @@ class ExceptionThread(threading.Thread):
     '''
     def __init__(self, *args, **kwargs):
         threading.Thread.__init__(self, *args, **kwargs)
-        self._eq = Queue.Queue()
+        self._eq = queue.Queue()
 
     def run(self, *args, **kwargs):
         try:

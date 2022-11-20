@@ -68,4 +68,4 @@ def run_test(root):
         sys.argv.append('-m %d' % maxtick)
 
         # Execute the script we are wrapping
-        execfile(srcpath('configs/example/memcheck.py'), globals())
+        exec(compile(open(srcpath('configs/example/memcheck.py'), "rb").read(), srcpath('configs/example/memcheck.py'), 'exec'), globals())

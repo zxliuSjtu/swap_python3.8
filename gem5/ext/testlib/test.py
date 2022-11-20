@@ -28,8 +28,8 @@
 
 import functools
 
-import helper
-import runner as runner_mod
+from . import helper
+from . import runner as runner_mod
 
 class TestCase(object):
     '''

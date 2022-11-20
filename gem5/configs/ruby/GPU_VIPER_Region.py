@@ -35,7 +35,7 @@ import math
 import m5
 from m5.objects import *
 from m5.defines import buildEnv
-from Ruby import send_evicts
+from .Ruby import send_evicts
 
 from topologies.Cluster import Cluster
 
@@ -216,8 +216,8 @@ class TCC(RubyCache):
           self.dataArrayBanks = 256 / options.num_tccs #number of data banks
           self.tagArrayBanks = 256 / options.num_tccs #number of tag banks
         self.size.value = self.size.value / options.num_tccs
-        if ((self.size.value / long(self.assoc)) < 128):
-            self.size.value = long(128 * self.assoc)
+        if ((self.size.value / int(self.assoc)) < 128):
+            self.size.value = int(128 * self.assoc)
         self.start_index_bit = math.log(options.cacheline_size, 2) + \
                                math.log(options.num_tccs, 2)
         self.replacement_policy = PseudoLRUReplacementPolicy(assoc = self.assoc)
@@ -466,7 +466,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
     # For an odd number of CPUs, still create the right number of controllers
     crossbar_bw = 16 * options.num_compute_units #Assuming a 2GHz clock
     cpuCluster = Cluster(extBW = (crossbar_bw), intBW=crossbar_bw)
-    for i in xrange((options.num_cpus + 1) / 2):
+    for i in range((options.num_cpus + 1) / 2):
 
         cp_cntrl = CPCntrl()
         cp_cntrl.create(options, ruby_system, system)
@@ -532,7 +532,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
         cpuCluster.add(rb_cntrl)
 
     gpuCluster = Cluster(extBW = (crossbar_bw), intBW = crossbar_bw)
-    for i in xrange(options.num_compute_units):
+    for i in range(options.num_compute_units):
 
         tcp_cntrl = TCPCntrl(TCC_select_num_bits = TCC_bits,
                              issue_latency = 1,
@@ -568,7 +568,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
 
         gpuCluster.add(tcp_cntrl)
 
-    for i in xrange(options.num_sqc):
+    for i in range(options.num_sqc):
 
         sqc_cntrl = SQCCntrl(TCC_select_num_bits = TCC_bits)
         sqc_cntrl.create(options, ruby_system, system)
@@ -596,7 +596,7 @@ def create_system(options, full_system, system, dma_devices, bootmem,
 
     numa_bit = 6
 
-    for i in xrange(options.num_tccs):
+    for i in range(options.num_tccs):
 
         tcc_cntrl = TCCCntrl()
         tcc_cntrl.create(options, ruby_system, system)

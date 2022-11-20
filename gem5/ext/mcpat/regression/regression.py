@@ -76,7 +76,7 @@ def run_test(testdir):
                     testdir, "region%s.out" % region_index)
             regression_correct = os.path.join(
                     testdir, "region%s.out.ref" % region_index)
-            print "Running test: %s..." % regression_test
+            print("Running test: %s..." % regression_test)
             # Run McPAT on the input
             os.system(
                     "%s -infile %s -print_level 10 > %s" %
@@ -86,25 +86,25 @@ def run_test(testdir):
                         "diff %s %s" % (regression_output, regression_correct),
                         "r").read()
                 if diff != "":
-                    print "WARN: Differences found in %s" % regression_output
+                    print("WARN: Differences found in %s" % regression_output)
                     if options.verbose:
-                        print diff
+                        print(diff)
                     test_passed = False
             else:
-                print "WARN: Regression test not set up: %s..." % regression_test
-                print "WARN: Not able to verify test"
+                print("WARN: Regression test not set up: %s..." % regression_test)
+                print("WARN: Not able to verify test")
                 test_passed = False
 
             if options.cleanup:
                 if options.verbose:
-                    print "WARN: Cleaning (deleting) regression output file: "\
-                            "%s" % regression_output
+                    print("WARN: Cleaning (deleting) regression output file: "\
+                            "%s" % regression_output)
                 os.system("rm -f %s" % regression_output)
 
     if test_passed:
-        print "PASSED: %s\n\n" % testdir
+        print("PASSED: %s\n\n" % testdir)
     else:
-        print "FAILED: %s\n\n" % testdir
+        print("FAILED: %s\n\n" % testdir)
 
 def has_power_region_files(testdir):
     files = os.listdir(testdir)
@@ -126,7 +126,7 @@ def is_valid_test_directory(testdir):
                     testdir, "region%s.out.ref" % region_index)
             if os.path.exists(regression_output):
                 if options.verbose:
-                    print "Valid regression test: %s/%s" % (testdir, file)
+                    print("Valid regression test: %s/%s" % (testdir, file))
             else:
                 valid_regression = False
 
@@ -157,27 +157,27 @@ optionsparser.add_option(
 (options, args) = optionsparser.parse_args()
 
 if not os.path.exists(mcpat_binary) and not options.build:
-    print "ERROR: McPAT binary does not exist: %s" % mcpat_binary
+    print("ERROR: McPAT binary does not exist: %s" % mcpat_binary)
     exit(0)
 
 if options.build:
-    print "Building McPAT..."
+    print("Building McPAT...")
     bin_dir = os.path.dirname(mcpat_binary)
     directory = os.path.join(bin_dir, "../../ext/mcpat")
     build_output = os.popen(
             "cd %s; make clean; make -j 8 dbg 2>&1" % directory).read()
     if "error" in build_output.lower():
-        print "Error during build: %s" % build_output
+        print("Error during build: %s" % build_output)
         exit(0)
 
 if len(args) < 1:
-    print "ERROR: Must specify regressions directory"
+    print("ERROR: Must specify regressions directory")
     exit(0)
 
 # check params
 rootdir = args[0];
 if not os.path.exists(rootdir):
-    print "ERROR: Regressions directory does not exist: %s" % rootdir
+    print("ERROR: Regressions directory does not exist: %s" % rootdir)
     exit(0)
 
 if options.maketest:
@@ -195,17 +195,17 @@ if options.maketest:
             regression_output = os.path.join(
                     rootdir, "region%s.out.ref" % region_index)
             if os.path.exists(regression_output):
-                print "WARN: Overwriting old regression output: " \
-                        "%s" % regression_output
+                print("WARN: Overwriting old regression output: " \
+                        "%s" % regression_output)
             # Run the test to set it up
-            print "Writing new regression output..."
+            print("Writing new regression output...")
             os.system(
                     "%s -infile %s -print_level 10 > %s" %
                     (mcpat_binary, regression_test, regression_output))
 
     if not found_test:
-        print "ERROR: Invalid test directory: %s" % rootdir
-        print "ERROR: Must contain XML file power_region*.xml"
+        print("ERROR: Invalid test directory: %s" % rootdir)
+        print("ERROR: Must contain XML file power_region*.xml")
 
     exit(0)
 
@@ -215,7 +215,7 @@ if has_power_region_files(rootdir):
     if is_valid_test_directory(rootdir) or options.force:
         run_test(rootdir)
     else:
-        print "WARN: Regression directory is not set up: %s" % rootdir
+        print("WARN: Regression directory is not set up: %s" % rootdir)
 else:
     folders = os.listdir(rootdir)
     folders.sort()
@@ -228,14 +228,14 @@ else:
                     run_test(testdir)
                 else:
                     if options.force:
-                        print "WARN: Regression directory is not set up: " \
-                                "%s" % testdir
-                        print "WARN: Running test anyway: %s..." % testdir
+                        print("WARN: Regression directory is not set up: " \
+                                "%s" % testdir)
+                        print("WARN: Running test anyway: %s..." % testdir)
                         run_test(testdir)
                     else:
-                        print "Regression directory is not set up: %s" % testdir
+                        print("Regression directory is not set up: %s" % testdir)
             else:
-                print "Not a valid test directory: %s" % testdir
+                print("Not a valid test directory: %s" % testdir)
 
 if not found_test:
-    print "No valid regressions found in %s" % rootdir
+    print("No valid regressions found in %s" % rootdir)

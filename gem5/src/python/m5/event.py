@@ -40,7 +40,7 @@
 #
 # Authors: Nathan Binkert
 
-from __future__ import print_function
+
 
 import m5
 import _m5.event

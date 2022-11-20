@@ -48,7 +48,7 @@ import difflib
 import re
 import sys
 
-from region import *
+from .region import *
 
 tabsize = 8
 lead = re.compile(r'^([ \t]+)')
@@ -56,9 +56,7 @@ trail = re.compile(r'([ \t]+)$')
 any_control = re.compile(r'\b(if|while|for)([ \t]*)\(')
 
 
-class UserInterface(object):
-    __metaclass__ = ABCMeta
-
+class UserInterface(object, metaclass=ABCMeta):
     def __init__(self, verbose=False):
         self.verbose = verbose
 
@@ -78,7 +76,7 @@ class UserInterface(object):
 
 class StdioUI(UserInterface):
     def _prompt(self, prompt, results, default):
-        return raw_input(prompt) or default
+        return input(prompt) or default
 
     def write(self, string):
         sys.stdout.write(string)

@@ -70,13 +70,13 @@ import re
 import sys
 import traceback
 
-import config
-import log
-import suite as suite_mod
-import test as test_mod
-import fixture as fixture_mod
-import wrappers
-import uid
+from . import config
+from . import log
+from . import suite as suite_mod
+from . import test as test_mod
+from . import fixture as fixture_mod
+from . import wrappers
+from . import uid
 
 class DuplicateTestItemException(Exception):
     '''
@@ -237,7 +237,7 @@ class Loader(object):
             fixture_mod.Fixture.collector.remove(new_fixtures)
 
         try:
-            execfile(path, newdict, newdict)
+            exec(compile(open(path, "rb").read(), path, 'exec'), newdict, newdict)
         except Exception as e:
             log.test_log.debug(traceback.format_exc())
             log.test_log.warn(
@@ -297,6 +297,6 @@ class Loader(object):
                 filenames.sort()
                 filepaths = [os.path.join(root, filename) \
                              for filename in filenames]
-                filepaths = filter(self.filepath_filter, filepaths)
+                filepaths = list(filter(self.filepath_filter, filepaths))
                 if filepaths:
                     yield filepaths

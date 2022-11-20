@@ -35,7 +35,7 @@
 #
 # Authors: Andreas Sandberg
 
-from __future__ import print_function
+
 
 import m5
 import _m5
@@ -66,7 +66,7 @@ class Sequential:
         self.cur_cpu = self.first_cpu
         self.cpus = cpus
 
-    def next(self):
+    def __next__(self):
         self.cur_cpu = (self.cur_cpu + 1) % len(self.cpus)
         return self.cpus[self.cur_cpu]
 
@@ -121,7 +121,7 @@ def run_test(root, switcher=None, freq=1000, verbose=False):
         exit_cause = exit_event.getCause()
 
         if exit_cause == "simulate() limit reached":
-            next_cpu = switcher.next()
+            next_cpu = next(switcher)
 
             if verbose:
                 print("Switching CPUs...")

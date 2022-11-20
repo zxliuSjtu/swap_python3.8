@@ -42,14 +42,14 @@ except ImportError:
     in_gem5 = False
 
 if in_gem5:
-    import SimObject
-    import core
-    import objects
-    import params
-    import stats
-    import util
+    from . import SimObject
+    from . import core
+    from . import objects
+    from . import params
+    from . import stats
+    from . import util
 
-    from event import *
-    from main import main
-    from simulate import *
+    from .event import *
+    from .main import main
+    from .simulate import *
 

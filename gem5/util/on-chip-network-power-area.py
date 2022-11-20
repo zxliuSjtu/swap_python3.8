@@ -25,7 +25,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import string, sys, subprocess, os
 
 # Compile DSENT to generate the Python module and then import it.
@@ -60,15 +60,15 @@ import dsent
 def parseConfig(config_file):
     config = ConfigParser()
     if not config.read(config_file):
-        print("ERROR: config file '", config_file, "' not found")
+        print(("ERROR: config file '", config_file, "' not found"))
         sys.exit(1)
 
     if not config.has_section("system.ruby.network"):
-        print("ERROR: Ruby network not found in '", config_file)
+        print(("ERROR: Ruby network not found in '", config_file))
         sys.exit(1)
 
     if config.get("system.ruby.network", "type") != "GarnetNetwork_d" :
-        print("ERROR: Garnet network not used in '", config_file)
+        print(("ERROR: Garnet network not used in '", config_file))
         sys.exit(1)
 
     number_of_virtual_networks = config.getint("system.ruby.network",
@@ -127,18 +127,18 @@ def computeRouterPowerAndArea(router, stats_file, config, int_links, ext_links,
                                             vcs_per_vnet, buffers_per_data_vc,
                                             ni_flit_size_bits)
 
-    print("%s Power: " % router, power)
+    print(("%s Power: " % router, power))
 
 
 ## Compute the power consumed by the given link
 def computeLinkPower(link, stats_file, config, sim_seconds):
     frequency = getClock(link + ".nls0", config)
     power = dsent.computeLinkPower(frequency)
-    print("%s.nls0 Power: " % link, power)
+    print(("%s.nls0 Power: " % link, power))
 
     frequency = getClock(link + ".nls1", config)
     power = dsent.computeLinkPower(frequency)
-    print("%s.nls1 Power: " % link, power)
+    print(("%s.nls1 Power: " % link, power))
 
 
 def parseStats(stats_file, config, router_config_file, link_config_file,
@@ -152,7 +152,7 @@ def parseStats(stats_file, config, router_config_file, link_config_file,
         stats_handle = open(stats_file, 'r')
         stats_handle.close()
     except IOError:
-        print("Failed to open ", stats_file, " for reading")
+        print(("Failed to open ", stats_file, " for reading"))
         exit(-1)
 
     # Now parse the stats
@@ -197,8 +197,8 @@ def parseStats(stats_file, config, router_config_file, link_config_file,
 # generates the power and the area of the on-chip network using DSENT
 def main():
     if len(sys.argv) != 5:
-        print("Usage: ", sys.argv[0], " <gem5 root directory> " \
-              "<simulation directory> <router config file> <link config file>")
+        print(("Usage: ", sys.argv[0], " <gem5 root directory> " \
+              "<simulation directory> <router config file> <link config file>"))
         exit(-1)
 
     print("WARNING: configuration files for DSENT and McPAT are separate. " \
